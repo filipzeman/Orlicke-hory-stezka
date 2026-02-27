@@ -1,0 +1,103 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout>
+	<!-- HERO -->
+	<section class="hero">
+		<div class="hero-content">
+			<h1>Orlické hory</h1>
+			<p>Digitální průvodce etapou Stezky Českem</p>
+			<a href="/mapa" class="cta"> Zobrazit mapu </a>
+		</div>
+	</section>
+
+	<!-- STATS -->
+	<section class="stats container">
+		<div class="stat">
+			<strong>90 km</strong>
+			<span>Délka etapy</span>
+		</div>
+		<div class="stat">
+			<strong>1115 m</strong>
+			<span>Nejvyšší bod</span>
+		</div>
+		<div class="stat">
+			<strong>150+</strong>
+			<span>Zaznamenaných bodů</span>
+		</div>
+	</section>
+
+	<!-- ABOUT -->
+	<section class="container">
+		<h2>O etapě</h2>
+		<p>
+			Hřeben Orlických hor nabízí dlouhé lesní úseky, daleké výhledy a
+			horské obce s možností občerstvení i noclehu. Tento web slouží jako
+			praktický doplněk oficiální mapy — s aktuálními informacemi o vodě,
+			jídle a spaní.
+		</p>
+	</section>
+
+	<!-- CTA SECTION -->
+	<section class="cta-section">
+		<div class="container">
+			<h2>Plánujete přechod?</h2>
+			<p>Zobrazte si přehled bodů a služeb podél trasy.</p>
+			<a href="/itinerar" class="cta"> Otevřít itinerář </a>
+		</div>
+	</section>
+</BaseLayout>
+
+<style>
+	.hero {
+		background-image:
+			linear-gradient(rgba(31, 61, 43, 0.7), rgba(31, 61, 43, 0.7)),
+			url("https://images.unsplash.com/photo-1601758064223-7fbe7f6c3e2e");
+		background-size: cover;
+		background-position: center;
+		color: white;
+		padding: 7rem 1rem;
+		text-align: center;
+	}
+
+	.hero-content {
+		max-width: 800px;
+		margin: 0 auto;
+	}
+
+	.cta {
+		display: inline-block;
+		margin-top: 2rem;
+		background: var(--color-accent);
+		color: white;
+		padding: 0.9rem 1.6rem;
+		text-decoration: none;
+		border-radius: 4px;
+		font-weight: 500;
+	}
+
+	.cta.secondary {
+		background: var(--color-primary);
+	}
+
+	.stats {
+		display: flex;
+		justify-content: space-around;
+		text-align: center;
+		padding: 3rem 1rem;
+		flex-wrap: wrap;
+	}
+
+	.stat strong {
+		display: block;
+		font-size: 1.8rem;
+	}
+
+	.cta-section {
+		background: var(--color-primary);
+		color: white;
+		padding: 4rem 1rem;
+		text-align: center;
+	}
+</style>

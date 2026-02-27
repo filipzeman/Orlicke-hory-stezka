@@ -1,0 +1,37 @@
+<footer class="footer">
+    <div class="inner">
+        <div class="left">
+            <strong>Orlické hory</strong>
+            <p>Digitální průvodce etapou Stezky Českem.</p>
+        </div>
+
+        <div class="right">
+            <p>
+                Spolupracujeme se
+                <a href="https://www.stezkaceskem.cz" target="_blank">
+                    Stezka Českem
+                </a>
+            </p>
+            <p>© {new Date().getFullYear()}</p>
+        </div>
+    </div>
+</footer>
+
+<style>
+    .footer {
+        background: var(--color-light);
+        border-top: 1px solid #e5e5e5;
+        margin-top: 4rem;
+    }
+
+    .inner {
+        max-width: var(--max-width);
+        margin: 0 auto;
+        padding: 2rem 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        gap: 2rem;
+        flex-wrap: wrap;
+        font-size: 0.9rem;
+    }
+</style>
