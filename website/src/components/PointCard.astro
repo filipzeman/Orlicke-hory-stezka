@@ -2,7 +2,7 @@
 import Icon from "./Icon.astro";
 import { getPointIcons } from "../utils/iconMapping";
 
-const { point } = Astro.props;
+const { filter, point } = Astro.props;
 const icons = getPointIcons(point);
 
 if (!icons.length) {
@@ -17,15 +17,22 @@ const pointTypeIcon: any = icons.shift();
     {point.km}
   </div>
 
-  <div class="content">
+  <div class={!filter || filter == "all" ? "content default" : "content"}>
     <a href={`/bod/${point.slug}`} class="name">
       <Icon name={pointTypeIcon} />
       {point.name}
     </a>
-
-    <div class="icons">
-      {icons.map((icon) => <Icon name={icon} />)}
-    </div>
+    {
+      !filter || filter == "all" ? (
+        <div class="icons">
+          {icons.map((icon) => (
+            <Icon name={icon} />
+          ))}
+        </div>
+      ) : (
+        <div>Detailed info</div>
+      )
+    }
   </div>
 </div>
 
@@ -55,8 +62,10 @@ const pointTypeIcon: any = icons.shift();
     padding-left: 1rem;
     border-left: 2px solid rgba(31, 61, 43, 0.15);
 
-    @media (min-width: 600px) {
-      flex-direction: row;
+    &.default {
+      @media (min-width: 600px) {
+        flex-direction: row;
+      }
     }
   }
 

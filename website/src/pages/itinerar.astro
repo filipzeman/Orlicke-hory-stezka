@@ -29,15 +29,31 @@ const filteredPoints = sortedPoints.filter((point) => {
   <section class="container">
     <div class="filters">
       <span>Filtrovat</span>
-      <a href="/itinerar" class="button primary">Vše</a>
-      <a href="/itinerar?filter=sleeping" class="button primary">Ubytování</a>
-      <a href="/itinerar?filter=food" class="button primary">Jídlo</a>
-      <a href="/itinerar?filter=water" class="button primary">Voda</a>
+      <a
+        href="/itinerar"
+        class={!filter ? "active button primary" : "button primary"}>Vše</a
+      >
+      <a
+        href="/itinerar?filter=sleeping"
+        class={filter == "sleeping"
+          ? "active button primary"
+          : "button primary"}>Ubytování</a
+      >
+      <a
+        href="/itinerar?filter=food"
+        class={filter == "food" ? "active button primary" : "button primary"}
+        >Jídlo</a
+      >
+      <a
+        href="/itinerar?filter=water"
+        class={filter == "water" ? "active button primary" : "button primary"}
+        >Voda</a
+      >
     </div>
   </section>
 
   <section class="container points">
-    {filteredPoints.map((point) => <PointCard point={point} />)}
+    {filteredPoints.map((point) => <PointCard filter={filter} point={point} />)}
   </section>
 </BaseLayout>
 
@@ -50,6 +66,7 @@ const filteredPoints = sortedPoints.filter((point) => {
 
   .filters {
     display: flex;
+    flex-wrap: wrap;
     gap: 1rem;
 
     span {

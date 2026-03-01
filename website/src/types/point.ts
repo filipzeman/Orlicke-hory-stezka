@@ -1,5 +1,5 @@
 export interface Service {
-  type: string;
+  type: "sleeping" | "food";
   name?: string;
   phone?: string;
   website?: string;

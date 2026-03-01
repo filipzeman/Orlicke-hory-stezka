@@ -3,7 +3,7 @@ import Icon from "./Icon.astro";
 ---
 
 <div class="legend">
-  <div class="legend-item">
+  <div class="legend-caption">
     <span>Legenda</span>
   </div>
   <div class="legend-item">
@@ -50,6 +50,8 @@ import Icon from "./Icon.astro";
 
     &:first-child {
       opacity: 1;
+      display: flex;
+      flex-wrap: wrap;
       font-size: 1rem;
       font-weight: 700;
     }

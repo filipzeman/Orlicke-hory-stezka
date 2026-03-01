@@ -43,7 +43,7 @@ a {
 }
 
 .button {
-  border: 1px solid black;
+  border: 1px solid transparent;
   text-decoration: none;
   border-radius: 4px;
   padding: 0.2rem 0.8rem;
@@ -53,8 +53,11 @@ a {
     background-color: var(--color-primary);
     color: white;
 
+    &.active {
+      background-color: var(--color-accent);
+    }
+
     &:hover {
-      background-color: var(--color-primary);
       opacity: 0.85;
     }
   }
