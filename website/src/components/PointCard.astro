@@ -6,80 +6,80 @@ const { point } = Astro.props;
 const icons = getPointIcons(point);
 
 if (!icons.length) {
-    return null;
+  return null;
 }
 
 const pointTypeIcon: any = icons.shift();
 ---
 
 <div class="item">
-    <div class="km">
-        {point.km}
-    </div>
+  <div class="km">
+    {point.km}
+  </div>
 
-    <div class="content">
-        <a href={`/bod/${point.slug}`} class="name">
-            <Icon name={pointTypeIcon} />
-            {point.name}
-        </a>
+  <div class="content">
+    <a href={`/bod/${point.slug}`} class="name">
+      <Icon name={pointTypeIcon} />
+      {point.name}
+    </a>
 
-        <div class="icons">
-            {icons.map((icon) => <Icon name={icon} />)}
-        </div>
+    <div class="icons">
+      {icons.map((icon) => <Icon name={icon} />)}
     </div>
+  </div>
 </div>
 
 <style>
-    .item {
-        display: grid;
-        grid-template-columns: 40px 1fr;
-        gap: 1rem;
-        position: relative;
-        padding: 1rem 0;
-        align-content: center;
+  .item {
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    gap: 1rem;
+    position: relative;
+    padding: 1rem 0;
+    align-content: center;
+  }
+
+  .km {
+    font-weight: 600;
+    font-size: 0.9rem;
+    /* padding-top: 0.2rem; */
+    color: var(--color-primary);
+    text-align: right;
+  }
+
+  .content {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    gap: 1rem;
+    padding-left: 1rem;
+    border-left: 2px solid rgba(31, 61, 43, 0.15);
+
+    @media (min-width: 600px) {
+      flex-direction: row;
     }
+  }
 
-    .km {
-        font-weight: 600;
-        font-size: 0.9rem;
-        /* padding-top: 0.2rem; */
-        color: var(--color-primary);
-        text-align: right;
+  .name {
+    font-weight: 600;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+
+    span {
+      margin-right: 1rem;
     }
+  }
 
-    .content {
-        display: flex;
-        flex-direction: column;
-        position: relative;
-        gap: 1rem;
-        padding-left: 1rem;
-        border-left: 2px solid rgba(31, 61, 43, 0.15);
+  .meta {
+    font-size: 0.85rem;
+    opacity: 0.6;
+    margin-top: 0.2rem;
+  }
 
-        @media (min-width: 600px) {
-            flex-direction: row;
-        }
-    }
-
-    .name {
-        font-weight: 600;
-        text-decoration: none;
-        color: inherit;
-        display: flex;
-
-        span {
-            margin-right: 1rem;
-        }
-    }
-
-    .meta {
-        font-size: 0.85rem;
-        opacity: 0.6;
-        margin-top: 0.2rem;
-    }
-
-    .icons {
-        display: flex;
-        gap: 0.5rem;
-        /* margin-top: 0.6rem; */
-    }
+  .icons {
+    display: flex;
+    gap: 0.5rem;
+    /* margin-top: 0.6rem; */
+  }
 </style>
