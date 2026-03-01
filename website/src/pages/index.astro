@@ -83,11 +83,28 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 
 	.stats {
 		display: flex;
+		flex-direction: column;
 		justify-content: space-around;
 		text-align: center;
-		padding: 3rem 1rem;
+		padding: 2rem 1rem;
 		flex-wrap: wrap;
-	}
+
+		.stat:not(:last-of-type) {
+			padding-bottom: 1rem;
+
+			@media (min-width: 600px) {
+				padding-bottom: 0;
+			}
+			
+			
+		}
+
+		@media (min-width: 600px) {
+			flex-direction: row;
+			justify-content: space-around;
+			padding: 3rem 1rem;
+			
+		}
 
 	.stat strong {
 		display: block;

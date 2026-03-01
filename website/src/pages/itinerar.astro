@@ -2,6 +2,7 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { points } from "../data/mockPoints";
 import PointCard from "../components/PointCard.astro";
+import IconGuide from "../components/IconGuide.astro";
 
 // Sort by km
 const sortedPoints = [...points].sort((a, b) => a.km - b.km);
@@ -11,6 +12,7 @@ const sortedPoints = [...points].sort((a, b) => a.km - b.km);
     <section class="container">
         <h1>Itinerář</h1>
         <p>Přehled bodů podél trasy etapy Orlické hory.</p>
+        <IconGuide />
     </section>
 
     <section class="container points">

@@ -1,0 +1,47 @@
+---
+import Icon from "./Icon.astro";
+---
+
+<div class="legend">
+    <div class="legend-item">
+        <Icon name="TentTree" size={16} />
+        <span>Možnost spaní</span>
+    </div>
+
+    <div class="legend-item">
+        <Icon name="Bed" size={16} />
+        <span>Ubytování</span>
+    </div>
+
+    <div class="legend-item">
+        <Icon name="Utensils" size={16} />
+        <span>Jídlo</span>
+    </div>
+
+    <div class="legend-item">
+        <Icon name="ShoppingBasket" size={16} />
+        <span>Obchod</span>
+    </div>
+
+    <div class="legend-item">
+        <Icon name="Droplets" size={16} />
+        <span>Voda</span>
+    </div>
+</div>
+
+<style>
+    .legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem 1.5rem;
+        margin: 1.5rem 0;
+        font-size: 0.85rem;
+    }
+
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        opacity: 0.8;
+    }
+</style>
