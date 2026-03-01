@@ -101,7 +101,7 @@ export const points = [
     {
         slug: "orlicke-zahori",
         name: "Orlické Záhoří",
-        km: 52.3,
+        km: 152.3,
         elevation: 620,
         type: "village",
         sleeping: ["hotel", "tent"],

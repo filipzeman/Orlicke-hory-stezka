@@ -4,7 +4,6 @@ import { getPointIcons } from "../utils/iconMapping";
 
 const { point } = Astro.props;
 const icons = getPointIcons(point);
-console.log(icons);
 
 if (!icons.length) {
     return null;
@@ -24,12 +23,8 @@ const pointTypeIcon: any = icons.shift();
             {point.name}
         </a>
 
-        <span class="meta">
-            {point.elevation} m
-        </span>
-
         <div class="icons">
-            {icons.map((icon) => <Icon name={icon} size={16} />)}
+            {icons.map((icon) => <Icon name={icon} />)}
         </div>
     </div>
 </div>
@@ -37,24 +32,32 @@ const pointTypeIcon: any = icons.shift();
 <style>
     .item {
         display: grid;
-        grid-template-columns: 70px 1fr;
+        grid-template-columns: 40px 1fr;
         gap: 1rem;
         position: relative;
-        padding: 1.2rem 0;
+        padding: 1rem 0;
+        align-content: center;
     }
 
     .km {
         font-weight: 600;
         font-size: 0.9rem;
-        text-align: right;
-        padding-top: 0.2rem;
+        /* padding-top: 0.2rem; */
         color: var(--color-primary);
+        text-align: right;
     }
 
     .content {
+        display: flex;
+        flex-direction: column;
         position: relative;
-        padding-left: 1.5rem;
+        gap: 1rem;
+        padding-left: 1rem;
         border-left: 2px solid rgba(31, 61, 43, 0.15);
+
+        @media (min-width: 600px) {
+            flex-direction: row;
+        }
     }
 
     .name {
@@ -77,6 +80,6 @@ const pointTypeIcon: any = icons.shift();
     .icons {
         display: flex;
         gap: 0.5rem;
-        margin-top: 0.6rem;
+        /* margin-top: 0.6rem; */
     }
 </style>
