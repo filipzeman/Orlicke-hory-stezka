@@ -28,10 +28,11 @@ const filteredPoints = sortedPoints.filter((point) => {
 
   <section class="container">
     <div class="filters">
-      <a href="/itinerar">Vše</a>
-      <a href="/itinerar?filter=sleeping">Ubytování</a>
-      <a href="/itinerar?filter=food">Jídlo</a>
-      <a href="/itinerar?filter=water">Voda</a>
+      <span>Filtrovat</span>
+      <a href="/itinerar" class="button primary">Vše</a>
+      <a href="/itinerar?filter=sleeping" class="button primary">Ubytování</a>
+      <a href="/itinerar?filter=food" class="button primary">Jídlo</a>
+      <a href="/itinerar?filter=water" class="button primary">Voda</a>
     </div>
   </section>
 
@@ -45,5 +46,16 @@ const filteredPoints = sortedPoints.filter((point) => {
     display: flex;
     flex-direction: column;
     gap: 1rem;
+  }
+
+  .filters {
+    display: flex;
+    gap: 1rem;
+
+    span {
+      display: inline-flex;
+      align-items: center;
+      font-weight: 700;
+    }
   }
 </style>

@@ -1,40 +1,61 @@
 :root {
-    --color-primary: #1f3d2b;
-    --color-accent: #c76b29;
-    --color-bg: #f5f3ef;
-    --color-light: #ffffff;
-    --max-width: 1100px;
+  --color-primary: #1f3d2b;
+  --color-accent: #c76b29;
+  --color-bg: #f5f3ef;
+  --color-light: #ffffff;
+  --max-width: 1100px;
 }
 
 * {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 body {
-    margin: 0;
-    font-family: system-ui, -apple-system, sans-serif;
-    background: var(--color-bg);
-    color: var(--color-primary);
-    line-height: 1.6;
-    min-height: 100vh;
+  margin: 0;
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
+  background: var(--color-bg);
+  color: var(--color-primary);
+  line-height: 1.6;
+  min-height: 100vh;
 }
 
 main {
-    min-height: 70vh;
+  min-height: 70vh;
 }
 
 .container {
-    max-width: var(--max-width);
-    margin: 0 auto;
-    padding: 1rem 1.5rem;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 1rem 1.5rem;
 }
 
 h1,
 h2,
 h3 {
-    margin-top: 0;
+  margin-top: 0;
 }
 
 a {
-    color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.button {
+  border: 1px solid black;
+  text-decoration: none;
+  border-radius: 4px;
+  padding: 0.2rem 0.8rem;
+  font-weight: 500;
+
+  &.primary {
+    background-color: var(--color-primary);
+    color: white;
+
+    &:hover {
+      background-color: var(--color-primary);
+      opacity: 0.85;
+    }
+  }
 }
