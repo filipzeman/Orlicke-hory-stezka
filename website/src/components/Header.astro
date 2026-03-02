@@ -1,40 +1,138 @@
-<header class="header">
-    <div class="inner">
-        <a href="/" class="logo"> Orlické hory </a>
+---
+const currentPath = Astro.url.pathname;
+---
 
-        <nav>
-            <a href="/itinerar">Itinerář</a>
-            <a href="/mapa">Mapa</a>
-            <a href="/blog">Blog</a>
-            <a href="/o-projektu">O projektu</a>
-        </nav>
+<header class="header">
+  <div class="inner">
+    <div class="header-actions">
+      <a href="/" class="logo"> Orlické hory </a>
+
+      <button class="menu-toggle" aria-expanded="false" aria-controls="nav">
+        ☰
+        <span class="sr-only">Menu</span>
+      </button>
     </div>
+
+    <nav id="nav" class="nav">
+      <a
+        href="/itinerar"
+        class={currentPath.startsWith("/itinerar") ? "active" : ""}
+      >
+        Itinerář
+      </a>
+      <a href="/blog">Blog</a>
+      <a href="/o-projektu">O projektu</a>
+    </nav>
+  </div>
 </header>
+<script>
+  const toggle = document.querySelector(".menu-toggle");
+  const nav = document.querySelector(".nav");
+
+  toggle?.addEventListener("click", () => {
+    const isOpen = nav?.classList.toggle("open");
+    toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+  });
+</script>
 
 <style>
-    .header {
-        background: var(--color-light);
-        border-bottom: 1px solid #e5e5e5;
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: white;
+    border-bottom: 1px solid #eee;
+  }
+
+  .inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.7rem 1.5rem;
+
+    @media (min-width: 768px) {
+      padding: 1.5rem;
+      flex-direction: row;
+    }
+  }
+
+  .header-actions {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+
+    @media (min-width: 768px) {
+      margin-bottom: 0;
+      width: auto;
+    }
+  }
+
+  .logo {
+    font-weight: 600;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .menu-toggle {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+  }
+
+  /* Mobile nav */
+  .nav {
+    display: none;
+    flex-direction: column;
+    background: white;
+  }
+
+  .nav a {
+    padding: 0.6rem 0;
+    text-decoration: none;
+    color: inherit;
+
+    border-bottom: 1px solid #f0f0f0;
+
+    &:last-of-type {
+      border-bottom: none;
+    }
+  }
+
+  .nav a.active {
+    font-weight: 600;
+    color: var(--color-primary);
+  }
+
+  .nav.open {
+    display: flex;
+    width: 100%;
+  }
+
+  /* Desktop */
+  @media (min-width: 768px) {
+    .menu-toggle {
+      display: none;
     }
 
-    .inner {
-        max-width: var(--max-width);
-        margin: 0 auto;
-        padding: 1rem 1.5rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+    .nav {
+      display: flex !important;
+      flex-direction: row;
+      gap: 1.5rem;
+      padding: 0;
     }
 
-    .logo {
-        font-weight: 600;
-        text-decoration: none;
-        font-size: 1.1rem;
+    .nav a {
+      border: none;
+      padding: 0;
     }
+  }
 
-    nav a {
-        margin-left: 1.5rem;
-        text-decoration: none;
-        font-size: 0.95rem;
-    }
+  /* Accessibility helper */
+  .sr-only {
+    position: absolute;
+    left: -9999px;
+  }
 </style>

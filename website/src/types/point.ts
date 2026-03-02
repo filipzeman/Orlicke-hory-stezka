@@ -12,8 +12,6 @@ export interface Point {
   km: number;
   elevation: number;
   type: string;
-  sleeping: Service[];
-  food: Service[];
-  water: boolean;
+  services: Service[];
   shortDescription: string;
 }
