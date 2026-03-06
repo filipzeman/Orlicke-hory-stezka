@@ -11,10 +11,13 @@ const sortedPoints = [...points].sort((a, b) => a.km - b.km);
 const filter = Astro.url.searchParams.get("filter");
 
 const filteredPoints = sortedPoints.filter((point) => {
-  if (!filter || filter === "all") return true;
-  if (filter === "sleeping") return point.sleeping.length > 0;
-  if (filter === "food") return point.food.length > 0;
-  if (filter === "water") return point.water;
+  if (!filter || filter === "vse") return true;
+  if (filter === "ubytovani") return point.category == "ubytovani";
+  if (filter === "obcerstveni") return point.category == "obcerstveni";
+  if (filter === "navigace") return point.category == "navigace";
+  if (filter === "doprava") return point.category == "doprava";
+  if (filter === "turisticke_cile") return point.category == "turisticke_cile";
+  if (filter === "ostatni") return point.category == "ostatni";
   return true;
 });
 ---
@@ -34,20 +37,38 @@ const filteredPoints = sortedPoints.filter((point) => {
         class={!filter ? "active button primary" : "button primary"}>Vše</a
       >
       <a
-        href="/itinerar?filter=sleeping"
-        class={filter == "sleeping"
+        href="/itinerar?filter=ubytovani"
+        class={filter == "ubytovani"
           ? "active button primary"
           : "button primary"}>Ubytování</a
       >
       <a
-        href="/itinerar?filter=food"
-        class={filter == "food" ? "active button primary" : "button primary"}
-        >Jídlo</a
+        href="/itinerar?filter=obcerstveni"
+        class={filter == "obcerstveni"
+          ? "active button primary"
+          : "button primary"}>Jídlo</a
       >
       <a
-        href="/itinerar?filter=water"
-        class={filter == "water" ? "active button primary" : "button primary"}
-        >Voda</a
+        href="/itinerar?filter=navigace"
+        class={filter == "navigace"
+          ? "active button primary"
+          : "button primary"}>Navigace</a
+      >
+      <a
+        href="/itinerar?filter=doprava"
+        class={filter == "doprava" ? "active button primary" : "button primary"}
+        >Doprava</a
+      >
+      <a
+        href="/itinerar?filter=turisticke_cile"
+        class={filter == "turisticke_cile"
+          ? "active button primary"
+          : "button primary"}>Turistické cíle</a
+      >
+      <a
+        href="/itinerar?filter=ostatni"
+        class={filter == "ostatni" ? "active button primary" : "button primary"}
+        >Ostatní</a
       >
     </div>
   </section>

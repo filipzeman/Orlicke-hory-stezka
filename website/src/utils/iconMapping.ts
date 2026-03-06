@@ -1,71 +1,21 @@
-export type IconName =
-  | "TentTree"
-  | "Hotel"
-  | "ShoppingBasket"
-  | "Signpost"
-  | "Coins"
-  | "Mountain"
-  | "TowerControl"
-  | "Building2"
-  | "Bed"
-  | "Utensils"
-  | "Droplets";
+import type { Point } from "../types/point";
+import type { IconName } from "../types/icons";
 
-interface PointData {
-  type: string;
-  sleeping: string[];
-  food: string[];
-  water: boolean;
-}
-
-export function getPointIcons(point: PointData): IconName[] {
+export function getPointIcons(point: Point): IconName[] {
   const icons: IconName[] = [];
 
   // --- TYPE MAPPING ---
-  const typeMap: Record<string, IconName> = {
-    peak: "Mountain",
-    village: "Building2",
-    crossroad: "Signpost",
+  const categoryMap: Record<string, IconName> = {
+    ubytovani: "Bed",
+    obcerstveni: "Utensils",
+    navigace: "Signpost",
+    doprava: "BusFront",
+    turisticke_cile: "Mountain",
+    ostatni: "Info",
   };
 
-  if (typeMap[point.type]) {
-    icons.push(typeMap[point.type]);
-  }
-
-  // --- SLEEPING MAPPING ---
-  const sleepingMap: Record<string, IconName> = {
-    tent: "TentTree",
-    camp: "TentTree",
-    hostel: "Hotel",
-    hotel: "Hotel",
-    trailangel: "Bed",
-  };
-
-  point.sleeping.forEach((s) => {
-    const icon = sleepingMap[s];
-    if (icon && !icons.includes(icon)) {
-      icons.push(icon);
-    }
-  });
-
-  // --- FOOD MAPPING ---
-  const foodMap: Record<string, IconName> = {
-    restaurant: "Utensils",
-    pub: "Utensils",
-    grocery: "ShoppingBasket",
-    bakery: "ShoppingBasket",
-  };
-
-  point.food.forEach((f) => {
-    const icon = foodMap[f];
-    if (icon && !icons.includes(icon)) {
-      icons.push(icon);
-    }
-  });
-
-  // --- WATER ---
-  if (point.water) {
-    icons.push("Droplets");
+  if (categoryMap[point.category]) {
+    icons.push(categoryMap[point.category]);
   }
 
   return icons;

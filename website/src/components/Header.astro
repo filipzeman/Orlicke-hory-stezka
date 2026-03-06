@@ -1,4 +1,6 @@
 ---
+import Icon from "./Icon.astro";
+
 const currentPath = Astro.url.pathname;
 ---
 
@@ -8,7 +10,7 @@ const currentPath = Astro.url.pathname;
       <a href="/" class="logo"> Orlické hory </a>
 
       <button class="menu-toggle" aria-expanded="false" aria-controls="nav">
-        ☰
+        <Icon name="SquareMenu" noBackground size={26} />
         <span class="sr-only">Menu</span>
       </button>
     </div>
@@ -61,10 +63,9 @@ const currentPath = Astro.url.pathname;
     display: flex;
     width: 100%;
     justify-content: space-between;
-    margin-bottom: 1rem;
+    align-items: center;
 
     @media (min-width: 768px) {
-      margin-bottom: 0;
       width: auto;
     }
   }
@@ -78,8 +79,15 @@ const currentPath = Astro.url.pathname;
   .menu-toggle {
     background: none;
     border: none;
+    display: flex;
     font-size: 1.2rem;
     cursor: pointer;
+    width: 42px;
+    height: 42px;
+
+    svg {
+      stroke: black;
+    }
   }
 
   /* Mobile nav */

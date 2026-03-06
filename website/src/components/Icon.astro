@@ -2,34 +2,53 @@
 import * as LucideIcons from "lucide-react";
 
 interface Props {
-    name: string;
-    size?: number;
-    title?: string;
-    class?: string;
+  name: string;
+  size?: number;
+  title?: string;
+  class?: string;
+  noBackground?: boolean;
 }
 
-const { name, size = 19, title, class: className = "" } = Astro.props as Props;
+const {
+  name,
+  size = 19,
+  title,
+  class: className = "",
+  noBackground: noBackground = false,
+} = Astro.props as Props;
 
 const IconComponent = (LucideIcons as any)[name];
 ---
 
 {
-    IconComponent && (
-        <span class={`icon ${className}`} title={title}>
-            <IconComponent size={size} strokeWidth={1.5} />
-        </span>
-    )
+  IconComponent && (
+    <span
+      class={`icon ${className} ${noBackground ? "no-background" : ""}`}
+      title={title}
+    >
+      <IconComponent size={size} strokeWidth={1.5} />
+    </span>
+  )
 }
 
 <style>
-    .icon {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 28px;
-        height: 28px;
-        border-radius: 50%;
-        background: rgba(31, 61, 43, 0.08);
-        color: var(--color-primary);
+  .icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: rgba(31, 61, 43, 0.08);
+    color: var(--color-primary);
+
+    &.no-background {
+      background: none;
     }
+
+    @media (min-width: 728px) {
+      width: 28px;
+      height: 28px;
+    }
+  }
 </style>

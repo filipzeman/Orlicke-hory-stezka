@@ -1,0 +1,78 @@
+---
+// import type { Point } from "../types/point";
+import Icon from "./Icon.astro";
+
+const { point } = Astro.props;
+
+if (!point) {
+  return null;
+}
+
+const emailAddress = `mailto:${point.email}`;
+const phoneLink = `tel:${point.phone}`;
+const websiteAddres = `https://${point.website}`;
+---
+
+<div class="info-container">
+  {
+    !!point.website && (
+      <div class="info-item">
+        <Icon name="Link" />
+        <a href={websiteAddres} class="info-caption" target="_blank">
+          {point.website}
+        </a>
+      </div>
+    )
+  }
+  {
+    !!point.phone && (
+      <div class="info-item">
+        <Icon name="Phone" />
+        <a href={phoneLink} class="info-caption">
+          {point.phone}
+        </a>
+      </div>
+    )
+  }
+  {
+    !!point.email && (
+      <div class="info-item">
+        <Icon name="Mail" />
+        <a href={emailAddress} class="info-caption">
+          {point.email}
+        </a>
+      </div>
+    )
+  }
+  {
+    !!point.openingHours && (
+      <div class="info-item">
+        <Icon name="Clock" />
+        <span class="info-caption">{point.openingHours}</span>
+      </div>
+    )
+  }
+</div>
+
+<style>
+  .info-container {
+    display: grid;
+    grid-template-columns: 50% 50%;
+    grid-template-rows: auto auto;
+    gap: 1rem;
+
+    /* @media (min-width: 600px) {
+      grid-template-columns: 25% 25% 25% 25%;
+      grid-template-rows: auto auto auto auto;
+      gap: 1rem;
+    } */
+  }
+
+  .info-item {
+    display: flex;
+
+    span:first-child {
+      margin-right: 1rem;
+    }
+  }
+</style>

@@ -1,6 +1,8 @@
 ---
 import Icon from "./Icon.astro";
 import { getPointIcons } from "../utils/iconMapping";
+import DetailedInfo from "./DetailedInfo.astro";
+import { ETAPE_LENGTH } from "../constants/constants.ts";
 
 const { filter, point } = Astro.props;
 const icons = getPointIcons(point);
@@ -10,13 +12,21 @@ if (!icons.length) {
 }
 
 const pointTypeIcon: any = icons.shift();
+
+const distanceToEtapeFinish: number = ETAPE_LENGTH - point.km;
 ---
 
 <div class="item">
   <div class="km">
-    {point.km}
+    <span
+      ><Icon name="ArrowDownFromLine" size={16} noBackground /> {point.km}</span
+    >
+    <span
+      ><Icon name="ArrowDownToLine" size={16} noBackground />{
+        distanceToEtapeFinish
+      }</span
+    >
   </div>
-
   <div class={!filter || filter == "all" ? "content default" : "content"}>
     <a href={`/bod/${point.slug}`} class="name">
       <Icon name={pointTypeIcon} />
@@ -30,7 +40,7 @@ const pointTypeIcon: any = icons.shift();
           ))}
         </div>
       ) : (
-        <div>Detailed info</div>
+        <DetailedInfo point={point} />
       )
     }
   </div>
@@ -39,10 +49,10 @@ const pointTypeIcon: any = icons.shift();
 <style>
   .item {
     display: grid;
-    grid-template-columns: 40px 1fr;
+    grid-template-columns: 60px 1fr;
     gap: 1rem;
     position: relative;
-    padding: 1rem 0;
+    padding-bottom: 1.5rem;
     align-content: center;
   }
 
@@ -52,6 +62,8 @@ const pointTypeIcon: any = icons.shift();
     /* padding-top: 0.2rem; */
     color: var(--color-primary);
     text-align: right;
+    display: flex;
+    flex-direction: column;
   }
 
   .content {
