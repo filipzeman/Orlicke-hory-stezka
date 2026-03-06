@@ -1,8 +1,9 @@
-# Astro Starter Kit: Minimal
+# Digitání průvodce etapou Stezky Českem
 
-ToDo:
+### Version: 0.1
+### Author: Filip Zeman
+
+## TODO:
 -- when navigation category active, display lines between points with color based on the route (red, blue, green, yellow, default)
--- check with AI PWA - to have all data offline
+-- PWA (offline data)
 -- option to download filtered itinerary
--- 6 basic categories - 'acommodation', 'food', 'water', 'navigation', 'stamps', 'other'
--- add to other category 'zasilkovna' points

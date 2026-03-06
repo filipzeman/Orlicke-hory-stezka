@@ -7,32 +7,32 @@ import Icon from "./Icon.astro";
     <span>Legenda</span>
   </div>
   <div class="legend-item">
-    <Icon name="Bed" size={16} />
+    <Icon name="Bed" size={16} notInteractive />
     <span>Ubytování</span>
   </div>
 
   <div class="legend-item">
-    <Icon name="Utensils" size={16} />
+    <Icon name="Utensils" size={16} notInteractive />
     <span>Jídlo</span>
   </div>
 
   <div class="legend-item">
-    <Icon name="Signpost" size={16} />
+    <Icon name="Signpost" size={16} notInteractive />
     <span>Navigace</span>
   </div>
 
   <div class="legend-item">
-    <Icon name="BusFront" size={16} />
+    <Icon name="BusFront" size={16} notInteractive />
     <span>Doprava</span>
   </div>
 
   <div class="legend-item">
-    <Icon name="Mountain" size={16} />
+    <Icon name="Mountain" size={16} notInteractive />
     <span>Turistické cíle</span>
   </div>
 
   <div class="legend-item">
-    <Icon name="Info" size={16} />
+    <Icon name="Info" size={16} notInteractive />
     <span>Ostatní</span>
   </div>
 </div>
@@ -56,9 +56,13 @@ import Icon from "./Icon.astro";
 
   .legend-caption {
     opacity: 1;
-    display: flex;
+    display: none;
     flex-wrap: wrap;
     font-size: 1rem;
     font-weight: 700;
+
+    @media (min-width: 768px) {
+      display: block;
+    }
   }
 </style>

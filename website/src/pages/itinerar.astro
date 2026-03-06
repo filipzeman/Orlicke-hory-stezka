@@ -31,45 +31,49 @@ const filteredPoints = sortedPoints.filter((point) => {
   <section class="container">
     <IconGuide />
     <div class="filters">
-      <span class="filters-caption">Filtrovat</span>
-      <a
-        href="/itinerar"
-        class={!filter ? "active button primary" : "button primary"}>Vše</a
-      >
-      <a
-        href="/itinerar?filter=ubytovani"
-        class={filter == "ubytovani"
-          ? "active button primary"
-          : "button primary"}>Ubytování</a
-      >
-      <a
-        href="/itinerar?filter=obcerstveni"
-        class={filter == "obcerstveni"
-          ? "active button primary"
-          : "button primary"}>Jídlo</a
-      >
-      <a
-        href="/itinerar?filter=navigace"
-        class={filter == "navigace"
-          ? "active button primary"
-          : "button primary"}>Navigace</a
-      >
-      <a
-        href="/itinerar?filter=doprava"
-        class={filter == "doprava" ? "active button primary" : "button primary"}
-        >Doprava</a
-      >
-      <a
-        href="/itinerar?filter=turisticke_cile"
-        class={filter == "turisticke_cile"
-          ? "active button primary"
-          : "button primary"}>Turistické cíle</a
-      >
-      <a
-        href="/itinerar?filter=ostatni"
-        class={filter == "ostatni" ? "active button primary" : "button primary"}
-        >Ostatní</a
-      >
+      <div class="filters-caption">Filtrovat</div>
+      <div class="filters-actions">
+        <a
+          href="/itinerar"
+          class={!filter ? "active button primary" : "button primary"}>Vše</a
+        >
+        <a
+          href="/itinerar?filter=ubytovani"
+          class={filter == "ubytovani"
+            ? "active button primary"
+            : "button primary"}>Ubytování</a
+        >
+        <a
+          href="/itinerar?filter=obcerstveni"
+          class={filter == "obcerstveni"
+            ? "active button primary"
+            : "button primary"}>Jídlo</a
+        >
+        <a
+          href="/itinerar?filter=navigace"
+          class={filter == "navigace"
+            ? "active button primary"
+            : "button primary"}>Navigace</a
+        >
+        <a
+          href="/itinerar?filter=doprava"
+          class={filter == "doprava"
+            ? "active button primary"
+            : "button primary"}>Doprava</a
+        >
+        <a
+          href="/itinerar?filter=turisticke_cile"
+          class={filter == "turisticke_cile"
+            ? "active button primary"
+            : "button primary"}>Turistické cíle</a
+        >
+        <a
+          href="/itinerar?filter=ostatni"
+          class={filter == "ostatni"
+            ? "active button primary"
+            : "button primary"}>Ostatní</a
+        >
+      </div>
     </div>
   </section>
 
@@ -87,21 +91,22 @@ const filteredPoints = sortedPoints.filter((point) => {
 
   .filters {
     display: flex;
-    flex-wrap: wrap;
     gap: 1rem;
+    align-items: baseline;
+    font-weight: 700;
+  }
 
-    span {
-      display: inline-flex;
-      align-items: center;
-      font-weight: 700;
+  .filters-actions {
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+  }
 
-      &.filters-caption {
-        display: none;
+  .filters-caption {
+    display: none;
 
-        @media (min-width: 600px) {
-          display: block;
-        }
-      }
+    @media (min-width: 768px) {
+      display: block;
     }
   }
 </style>

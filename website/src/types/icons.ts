@@ -17,6 +17,6 @@ export type IconName =
   | "Mail"
   | "Clock"
   | "LineDotRightHorizontal"
-  | "ArrowDownFromLine"
+  | "ArrowRightFromLine"
   | "ArrowDownToLine"
   | "SquareMenu";

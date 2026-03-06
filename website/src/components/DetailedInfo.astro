@@ -13,59 +13,61 @@ const phoneLink = `tel:${point.phone}`;
 const websiteAddres = `https://${point.website}`;
 ---
 
-<div class="info-container">
-  {
-    !!point.website && (
-      <div class="info-item">
-        <Icon name="Link" />
-        <a href={websiteAddres} class="info-caption" target="_blank">
-          {point.website}
-        </a>
-      </div>
-    )
-  }
-  {
-    !!point.phone && (
-      <div class="info-item">
-        <Icon name="Phone" />
-        <a href={phoneLink} class="info-caption">
-          {point.phone}
-        </a>
-      </div>
-    )
-  }
-  {
-    !!point.email && (
-      <div class="info-item">
-        <Icon name="Mail" />
-        <a href={emailAddress} class="info-caption">
-          {point.email}
-        </a>
-      </div>
-    )
-  }
-  {
-    !!point.openingHours && (
-      <div class="info-item">
-        <Icon name="Clock" />
-        <span class="info-caption">{point.openingHours}</span>
-      </div>
-    )
-  }
-</div>
+{
+  (point.website || point.email || point.phone || point.openingHours) && (
+    <div class="info-container">
+      {!!point.website && (
+        <div class="info-item">
+          <Icon name="Link" size={16} notInteractive noBackground />
+          <a href={websiteAddres} class="info-caption" target="_blank">
+            {point.website}
+          </a>
+        </div>
+      )}
+      {!!point.phone && (
+        <div class="info-item">
+          <Icon name="Phone" size={16} notInteractive noBackground />
+          <a href={phoneLink} class="info-caption">
+            {point.phone}
+          </a>
+        </div>
+      )}
+      {!!point.email && (
+        <div class="info-item">
+          <Icon name="Mail" size={16} notInteractive noBackground />
+          <a href={emailAddress} class="info-caption">
+            {point.email}
+          </a>
+        </div>
+      )}
+      {!!point.openingHours && (
+        <div class="info-item">
+          <Icon name="Clock" size={16} notInteractive noBackground />
+          <span class="info-caption">{point.openingHours}</span>
+        </div>
+      )}
+    </div>
+  )
+}
 
 <style>
   .info-container {
     display: grid;
-    grid-template-columns: 50% 50%;
-    grid-template-rows: auto auto;
+    grid-template-columns: 100%;
+    grid-template-rows: auto;
     gap: 1rem;
 
-    /* @media (min-width: 600px) {
-      grid-template-columns: 25% 25% 25% 25%;
-      grid-template-rows: auto auto auto auto;
+    @media (min-width: 600px) {
+      grid-template-columns: 50% 50%;
+      grid-template-rows: auto auto;
       gap: 1rem;
-    } */
+    }
+
+    @media (min-width: 768px) {
+      grid-template-columns: 30% 30%;
+      grid-template-rows: auto auto;
+      gap: 1rem;
+    }
   }
 
   .info-item {

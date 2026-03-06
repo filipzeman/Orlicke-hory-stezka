@@ -13,30 +13,35 @@ if (!icons.length) {
 
 const pointTypeIcon: any = icons.shift();
 
-const distanceToEtapeFinish: number = ETAPE_LENGTH - point.km;
+const DistanceToEtapeFinish: number = ETAPE_LENGTH - point.km;
 ---
 
 <div class="item">
   <div class="km">
-    <span
-      ><Icon name="ArrowDownFromLine" size={16} noBackground /> {point.km}</span
+    <span class="km-item"
+      ><Icon name="ArrowRightFromLine" size={16} noBackground notInteractive />{point.km}</span
     >
-    <span
+    <!-- <span class="km-item"
       ><Icon name="ArrowDownToLine" size={16} noBackground />{
-        distanceToEtapeFinish
+        DistanceToEtapeFinish
       }</span
-    >
+    > -->
   </div>
   <div class={!filter || filter == "all" ? "content default" : "content"}>
     <a href={`/bod/${point.slug}`} class="name">
-      <Icon name={pointTypeIcon} />
+      {
+        filter == 'all' ? (<Icon name={pointTypeIcon} 
+      />) : (<Icon name={pointTypeIcon} size={16} notInteractive />)
+        
+      }
+      
       {point.name}
     </a>
     {
       !filter || filter == "all" ? (
         <div class="icons">
           {icons.map((icon) => (
-            <Icon name={icon} />
+            <Icon name={icon} notInteractive/>
           ))}
         </div>
       ) : (
@@ -63,7 +68,16 @@ const distanceToEtapeFinish: number = ETAPE_LENGTH - point.km;
     color: var(--color-primary);
     text-align: right;
     display: flex;
-    flex-direction: column;
+    /* flex-direction: column; */
+    just
+    text-align: left;
+
+  }
+
+  .km-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: anchor-center;
   }
 
   .content {
@@ -75,10 +89,8 @@ const distanceToEtapeFinish: number = ETAPE_LENGTH - point.km;
     border-left: 2px solid rgba(31, 61, 43, 0.15);
 
     &.default {
-      @media (min-width: 600px) {
         flex-direction: row;
       }
-    }
   }
 
   .name {
@@ -86,6 +98,7 @@ const distanceToEtapeFinish: number = ETAPE_LENGTH - point.km;
     text-decoration: none;
     color: inherit;
     display: flex;
+    align-items: center;
 
     span {
       margin-right: 1rem;
