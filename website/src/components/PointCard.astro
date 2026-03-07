@@ -19,13 +19,11 @@ const DistanceToEtapeFinish: number = ETAPE_LENGTH - point.km;
 <div class="item">
   <div class="km">
     <span class="km-item"
-      ><Icon name="ArrowRightFromLine" size={16} noBackground notInteractive />{point.km}</span
+      >{ point.km } km</span
     >
-    <!-- <span class="km-item"
-      ><Icon name="ArrowDownToLine" size={16} noBackground />{
-        DistanceToEtapeFinish
-      }</span
-    > -->
+    <span class="km-item small"
+      >{DistanceToEtapeFinish.toFixed(1)} km</span
+    >
   </div>
   <div class={!filter || filter == "all" ? "content default" : "content"}>
     <a href={`/bod/${point.slug}`} class="name">
@@ -59,16 +57,17 @@ const DistanceToEtapeFinish: number = ETAPE_LENGTH - point.km;
     position: relative;
     padding-bottom: 1.5rem;
     align-content: center;
+
   }
 
   .km {
-    font-weight: 600;
+    font-weight: 700;
     font-size: 0.9rem;
     /* padding-top: 0.2rem; */
     color: var(--color-primary);
     text-align: right;
     display: flex;
-    /* flex-direction: column; */
+    flex-direction: column;
     just
     text-align: left;
 
@@ -78,6 +77,10 @@ const DistanceToEtapeFinish: number = ETAPE_LENGTH - point.km;
     display: flex;
     justify-content: space-between;
     align-items: anchor-center;
+
+    &.small {
+      font-weight: 400;
+    }
   }
 
   .content {

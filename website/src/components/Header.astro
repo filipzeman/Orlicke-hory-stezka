@@ -1,7 +1,10 @@
 ---
 import Icon from "./Icon.astro";
+import { FIRST_LEVEL_NAVIGATION } from "../constants/constants";
+import { createNavItems } from "../utils/slugify";
 
 const currentPath = Astro.url.pathname;
+const firstLevelNavigationItems = createNavItems(FIRST_LEVEL_NAVIGATION);
 ---
 
 <header class="header">
@@ -16,131 +19,138 @@ const currentPath = Astro.url.pathname;
     </div>
 
     <nav id="nav" class="nav">
-      <a
-        href="/itinerar"
-        class={currentPath.startsWith("/itinerar") ? "active" : ""}
-      >
-        Itinerář
-      </a>
-      <a href="/blog">Blog</a>
-      <a href="/o-projektu">O projektu</a>
+      {
+        firstLevelNavigationItems.map((item) => (
+          <a
+            href={`/${item.slug}`}
+            class={currentPath === `/${item.slug}` ? "active" : ""}
+          >
+            {item.name}
+          </a>
+        ))
+      }
     </nav>
   </div>
-</header>
-<script>
-  const toggle = document.querySelector(".menu-toggle");
-  const nav = document.querySelector(".nav");
+  <script>
+    const toggle = document.querySelector(".menu-toggle");
+    const nav = document.querySelector(".nav");
 
-  toggle?.addEventListener("click", () => {
-    const isOpen = nav?.classList.toggle("open");
-    toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
-  });
-</script>
+    toggle?.addEventListener("click", () => {
+      const isOpen = nav?.classList.toggle("open");
+      toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+    });
+  </script>
 
-<style>
-  .header {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    background: white;
-    border-bottom: 1px solid #eee;
-  }
-
-  .inner {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0.7rem 1.5rem;
-
-    @media (min-width: 768px) {
-      padding: 1.5rem;
-      flex-direction: row;
+  <style>
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: white;
+      border-bottom: 1px solid #eee;
     }
-  }
 
-  .header-actions {
-    display: flex;
-    width: 100%;
-    justify-content: space-between;
-    align-items: center;
+    .inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.7rem 1.5rem;
 
-    @media (min-width: 768px) {
-      width: auto;
+      @media (min-width: 768px) {
+        padding: 1.5rem;
+        flex-direction: row;
+      }
     }
-  }
 
-  .logo {
-    font-weight: 600;
-    text-decoration: none;
-    color: inherit;
-  }
+    .header-actions {
+      display: flex;
+      width: 100%;
+      justify-content: space-between;
+      align-items: center;
 
-  .menu-toggle {
-    background: none;
-    border: none;
-    display: flex;
-    font-size: 1.2rem;
-    cursor: pointer;
-    width: 42px;
-    height: 42px;
-
-    svg {
-      stroke: black;
+      @media (min-width: 768px) {
+        width: auto;
+      }
     }
-  }
 
-  /* Mobile nav */
-  .nav {
-    display: none;
-    flex-direction: column;
-    background: white;
-  }
-
-  .nav a {
-    padding: 0.6rem 0;
-    text-decoration: none;
-    color: inherit;
-
-    border-bottom: 1px solid #f0f0f0;
-
-    &:last-of-type {
-      border-bottom: none;
+    .logo {
+      font-weight: 600;
+      text-decoration: none;
+      color: inherit;
+      white-space: nowrap;
     }
-  }
 
-  .nav a.active {
-    font-weight: 600;
-    color: var(--color-primary);
-  }
-
-  .nav.open {
-    display: flex;
-    width: 100%;
-  }
-
-  /* Desktop */
-  @media (min-width: 768px) {
     .menu-toggle {
-      display: none;
+      background: none;
+      border: none;
+      display: flex;
+      font-size: 1.2rem;
+      cursor: pointer;
+      width: 42px;
+      height: 42px;
+
+      svg {
+        stroke: black;
+      }
     }
 
+    /* Mobile nav */
     .nav {
-      display: flex !important;
-      flex-direction: row;
-      gap: 1.5rem;
-      padding: 0;
+      display: none;
+      flex-direction: column;
+      background: white;
     }
 
     .nav a {
-      border: none;
-      padding: 0;
-    }
-  }
+      padding: 0.6rem 0;
+      text-decoration: none;
+      color: inherit;
 
-  /* Accessibility helper */
-  .sr-only {
-    position: absolute;
-    left: -9999px;
-  }
-</style>
+      border-bottom: 1px solid #f0f0f0;
+
+      &:last-of-type {
+        border-bottom: none;
+      }
+    }
+
+    .nav a.active {
+      font-weight: 600;
+      color: var(--color-primary);
+    }
+
+    .nav.open {
+      display: flex;
+      width: 100%;
+
+      @media (min-width: 768px) {
+        justify-content: flex-end;
+      }
+    }
+
+    /* Desktop */
+    @media (min-width: 768px) {
+      .menu-toggle {
+        display: none;
+      }
+
+      .nav {
+        display: flex !important;
+        flex-direction: row;
+        gap: 1.5rem;
+        padding: 0;
+      }
+
+      .nav a {
+        border: none;
+        padding: 0;
+      }
+    }
+
+    /* Accessibility helper */
+    .sr-only {
+      position: absolute;
+      left: -9999px;
+    }
+  </style>
+</header>

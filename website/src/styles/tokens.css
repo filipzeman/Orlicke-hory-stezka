@@ -1,0 +1,30 @@
+:root {
+  /* Colors */
+  --color-primary: #1f3d2b;
+  --color-text: #1a1a1a;
+  --color-muted: #6b7280;
+  --color-border: #e5e7eb;
+  --color-background: #ffffff;
+
+  /* Typography */
+  --font-base: system-ui, -apple-system, sans-serif;
+
+  --text-sm: 0.85rem;
+  --text-base: 1.05rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.6rem;
+
+  /* Spacing */
+  --space-xs: 0.4rem;
+  --space-sm: 0.8rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+
+  /* Radius */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+
+  /* Layout */
+  --content-width: 760px;
+}

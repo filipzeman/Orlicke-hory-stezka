@@ -21,7 +21,6 @@ export const points: Point[] = [
     type: "restaurace",
     website: "www.zemska-brana.cz",
     phone: "777111222",
-    email: "email@email.com",
     openingHours: "PO - PA 08:00 - 17:00",
     note: "Horská obec s kostelem a možností občerstvení.",
   },
@@ -33,6 +32,7 @@ export const points: Point[] = [
     category: "turisticke_cile",
     type: "rozhledna",
     note: "Rozhledna s panoramatickým výhledem.",
+    openingHours: "Březen - Září 07:30 - 11.40 12.10 - 16:00",
   },
   {
     slug: "mezivrsi",
@@ -41,6 +41,7 @@ export const points: Point[] = [
     elevation: 925,
     category: "navigace",
     type: "rozcestnik",
+    routeMarking: "zluta",
     note: "Lesní rozcestí na hřebeni.",
   },
   {
@@ -50,7 +51,7 @@ export const points: Point[] = [
     elevation: 1115,
     category: "ubytovani",
     type: "nouzove_nocoviste",
-    note: "Nejvyšší vrchol Orlických hor.",
+    note: "Turistická útulna na vrcholu Velká Deštná - nutnost rezervovat předem",
   },
   {
     slug: "destne",
