@@ -1,6 +1,6 @@
 # Digitání průvodce etapou Stezky Českem
 
-### Version: 0.1
+### Version: 0.2
 ### Author: Filip Zeman
 
 ## TODO:
