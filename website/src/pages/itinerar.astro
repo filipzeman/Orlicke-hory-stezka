@@ -33,45 +33,31 @@ const filteredPoints = sortedPoints.filter((point) => {
     <div class="filters">
       <div class="filters-caption">Filtrovat</div>
       <div class="filters-actions">
-        <a
-          href="/itinerar"
-          class={!filter ? "active button primary" : "button primary"}>Vše</a
-        >
+        <a href="/itinerar" class={!filter ? "active button primary" : "button primary"}>Vše</a>
         <a
           href="/itinerar?filter=ubytovani"
-          class={filter == "ubytovani"
-            ? "active button primary"
-            : "button primary"}>Ubytování</a
+          class={filter == "ubytovani" ? "active button primary" : "button primary"}>Ubytování</a
         >
         <a
           href="/itinerar?filter=obcerstveni"
-          class={filter == "obcerstveni"
-            ? "active button primary"
-            : "button primary"}>Jídlo</a
+          class={filter == "obcerstveni" ? "active button primary" : "button primary"}>Jídlo</a
         >
         <a
           href="/itinerar?filter=navigace"
-          class={filter == "navigace"
-            ? "active button primary"
-            : "button primary"}>Navigace</a
+          class={filter == "navigace" ? "active button primary" : "button primary"}>Navigace</a
         >
         <a
           href="/itinerar?filter=doprava"
-          class={filter == "doprava"
-            ? "active button primary"
-            : "button primary"}>Doprava</a
+          class={filter == "doprava" ? "active button primary" : "button primary"}>Doprava</a
         >
         <a
           href="/itinerar?filter=turisticke_cile"
-          class={filter == "turisticke_cile"
-            ? "active button primary"
-            : "button primary"}>Turistické cíle</a
+          class={filter == "turisticke_cile" ? "active button primary" : "button primary"}
+          >Turistické cíle</a
         >
         <a
           href="/itinerar?filter=ostatni"
-          class={filter == "ostatni"
-            ? "active button primary"
-            : "button primary"}>Ostatní</a
+          class={filter == "ostatni" ? "active button primary" : "button primary"}>Ostatní</a
         >
       </div>
     </div>

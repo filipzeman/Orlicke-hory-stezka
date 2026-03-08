@@ -22,10 +22,10 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site || "https://orlicke-
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
     {description && <meta name="description" content={description} />}
-    
+
     <!-- Canonical URL -->
     <link rel="canonical" href={canonicalURL} />
-    
+
     <!-- Open Graph / Social Media -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonicalURL} />
@@ -33,14 +33,14 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site || "https://orlicke-
     <meta property="og:description" content={description} />
     <meta property="og:image" content={image} />
     <meta property="og:site_name" content="Orlické hory" />
-    
+
     <!-- Twitter Card -->
     <meta property="twitter:card" content="summary_large_image" />
     <meta property="twitter:url" content={canonicalURL} />
     <meta property="twitter:title" content={title} />
     <meta property="twitter:description" content={description} />
     <meta property="twitter:image" content={image} />
-    
+
     <!-- Additional Meta Tags -->
     <meta name="robots" content="index, follow" />
     <meta name="author" content="Orlické hory" />

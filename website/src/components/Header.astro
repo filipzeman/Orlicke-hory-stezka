@@ -10,7 +10,7 @@ const firstLevelNavigationItems = createNavItems(FIRST_LEVEL_NAVIGATION);
 <header class="header">
   <div class="inner">
     <div class="header-actions">
-      <a href="/" class="logo"> Orlické hory </a>
+      <a href="/" class="logo"> Orlické hory</a>
 
       <button class="menu-toggle" aria-expanded="false" aria-controls="nav">
         <Icon name="SquareMenu" noBackground size={26} />
@@ -21,10 +21,7 @@ const firstLevelNavigationItems = createNavItems(FIRST_LEVEL_NAVIGATION);
     <nav id="nav" class="nav">
       {
         firstLevelNavigationItems.map((item) => (
-          <a
-            href={`/${item.slug}`}
-            class={currentPath === `/${item.slug}` ? "active" : ""}
-          >
+          <a href={`/${item.slug}`} class={currentPath === `/${item.slug}` ? "active" : ""}>
             {item.name}
           </a>
         ))

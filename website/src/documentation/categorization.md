@@ -1,4 +1,3 @@
-
 ## Kategorie
 
 - Ubytování
@@ -22,7 +21,7 @@
 ### Občerstvení
 
 - název - text
-- Typ - restaurace, bufet, obchod, večerka, kavárna, pekárna, zdroj vody 
+- Typ - restaurace, bufet, obchod, večerka, kavárna, pekárna, zdroj vody
 - Otevírací doba - text
 - Web - text
 - Poznámka
@@ -30,7 +29,7 @@
 ### Navigace
 
 - název - text
-- Typ - rozcestník, milník, mapa, začátek / konec etapy, nouzový bod, uzavírka, turistický přístřešek,      
+- Typ - rozcestník, milník, mapa, začátek / konec etapy, nouzový bod, uzavírka, turistický přístřešek,  
   vrchol, hraniční přechod
 - Značení trasy - barva trasy
 - Poznámka

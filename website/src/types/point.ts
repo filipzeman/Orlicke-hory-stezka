@@ -56,10 +56,7 @@ export type NavigationTypes =
   | "uzavirka"
   | "turisticky_pristresek"
   | "vrchol";
-export type TransportTypes =
-  | "vlakova_zastavka"
-  | "autobusova_zastavka"
-  | "prevoz";
+export type TransportTypes = "vlakova_zastavka" | "autobusova_zastavka" | "prevoz";
 export type TuristicGoalTypes =
   | "kostel"
   | "chapel"

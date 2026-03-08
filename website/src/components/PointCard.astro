@@ -11,35 +11,33 @@ if (!icons.length) {
   return null;
 }
 
-const pointTypeIcon: any = icons.shift();
+const pointTypeIcon: string = icons.shift() || "";
 
 const DistanceToEtapeFinish: number = ETAPE_LENGTH - point.km;
 ---
 
 <div class="item">
   <div class="km">
-    <span class="km-item"
-      >{ point.km } km</span
-    >
-    <span class="km-item small"
-      >{DistanceToEtapeFinish.toFixed(1)} km</span
-    >
+    <span class="km-item">{point.km} km</span>
+    <span class="km-item small">{DistanceToEtapeFinish.toFixed(1)} km</span>
   </div>
   <div class={!filter || filter == "all" ? "content default" : "content"}>
     <a href={`/bod/${point.slug}`} class="name">
       {
-        (filter == 'all' || !filter) ? (<Icon name={pointTypeIcon} 
-      />) : (<Icon name={pointTypeIcon} size={16} notInteractive />)
-        
+        filter == "all" || !filter ? (
+          <Icon name={pointTypeIcon} />
+        ) : (
+          <Icon name={pointTypeIcon} size={16} notInteractive />
+        )
       }
-      
+
       {point.name}
     </a>
     {
       !filter || filter == "all" ? (
         <div class="icons">
           {icons.map((icon) => (
-            <Icon name={icon} notInteractive/>
+            <Icon name={icon} notInteractive />
           ))}
         </div>
       ) : (
@@ -57,7 +55,6 @@ const DistanceToEtapeFinish: number = ETAPE_LENGTH - point.km;
     position: relative;
     padding-bottom: 1.5rem;
     align-content: center;
-
   }
 
   .km {
@@ -90,8 +87,8 @@ const DistanceToEtapeFinish: number = ETAPE_LENGTH - point.km;
     border-left: 2px solid rgba(31, 61, 43, 0.15);
 
     &.default {
-        flex-direction: row;
-      }
+      flex-direction: row;
+    }
   }
 
   .name {
