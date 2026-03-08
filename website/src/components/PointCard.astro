@@ -23,27 +23,22 @@ const DistanceToEtapeFinish: number = ETAPE_LENGTH - point.km;
   </div>
   <div class={!filter || filter == "all" ? "content default" : "content"}>
     <a href={`/bod/${point.slug}`} class="name">
-      {
-        filter == "all" || !filter ? (
-          <Icon name={pointTypeIcon} />
-        ) : (
-          <Icon name={pointTypeIcon} size={16} notInteractive />
-        )
-      }
-
+      {filter == "all" || !filter ? (
+        <Icon name={pointTypeIcon} />
+      ) : (
+        <Icon name={pointTypeIcon} size={16} notInteractive />
+      )}
       {point.name}
     </a>
-    {
-      !filter || filter == "all" ? (
-        <div class="icons">
-          {icons.map((icon) => (
-            <Icon name={icon} notInteractive />
-          ))}
-        </div>
-      ) : (
-        <DetailedInfo point={point} />
-      )
-    }
+    {!filter || filter == "all" ? (
+      <div class="icons">
+        {icons.map((icon) => (
+          <Icon name={icon} notInteractive />
+        ))}
+      </div>
+    ) : (
+      <DetailedInfo point={point} />
+    )}
   </div>
 </div>
 
