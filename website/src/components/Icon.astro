@@ -1,6 +1,5 @@
 ---
 import * as LucideIcons from "lucide-react";
-import type { LucideIcon } from "lucide-react";
 
 interface Props {
   name: string;
@@ -20,7 +19,8 @@ const {
   notInteractive: notInteractive = false,
 } = Astro.props as Props;
 
-const IconComponent = (LucideIcons as Record<string, LucideIcon>)[name];
+const IconComponent = (LucideIcons as Record<string, any>)[name];
+
 ---
 
 {

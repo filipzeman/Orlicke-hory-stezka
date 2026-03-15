@@ -46,6 +46,12 @@ const websiteAddres = `https://${point.website}`;
           <span class="info-caption">{point.openingHours}</span>
         </div>
       )}
+       {!!point.note && (
+        <div class="info-item">
+          <Icon name="Clock" size={16} notInteractive noBackground />
+          <span class="info-caption">{point.note}</span>
+        </div>
+      )}
     </div>
   )
 }
