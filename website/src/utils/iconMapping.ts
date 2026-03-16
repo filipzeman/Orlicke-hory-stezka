@@ -14,8 +14,8 @@ export function getPointIcons(point: Point): IconName[] {
     ostatni: "Info",
   };
 
-  if (categoryMap[point.category]) {
-    icons.push(categoryMap[point.category]);
+  if (point.categoryKey && categoryMap[point.categoryKey]) {
+    icons.push(categoryMap[point.categoryKey]);
   }
 
   return icons;

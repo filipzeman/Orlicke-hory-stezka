@@ -11,7 +11,7 @@ const supabase = createClient(
 
 async function sync() {
   const auth = new google.auth.GoogleAuth({
-    keyFile: "process.env.GOOGLE_SERVICE_KEY",
+    keyFile: process.env.GOOGLE_SERVICE_KEY,
     scopes: ["https://www.googleapis.com/auth/spreadsheets.readonly"],
   });
 
@@ -31,7 +31,7 @@ async function sync() {
     if (!id) continue;
 
     // skip inactive rows
-    if (row[21] !== "ano") continue;
+    if (row[21] !== "TRUE" && row[21] !== true) continue;
 
     const point = {
       id: row[0],
@@ -39,13 +39,14 @@ async function sync() {
       location_name: row[2],
       km: parseFloat(row[3]),
 
-      name: row[4],
+      point_name: row[4],
       crossroad_number: row[5],
       category: row[6],
       type: row[7],
 
       date: row[8],
       author: row[9],
+      
 
       phone: row[10],
       email: row[11],
@@ -62,6 +63,7 @@ async function sync() {
       hikers_welcome: row[19] === "ano",
 
       photo: row[20],
+      active: row[21]
     };
 
     const { error } = await supabase

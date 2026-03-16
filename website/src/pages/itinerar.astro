@@ -1,23 +1,45 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { points } from "../data/mockPoints";
+import { supabase } from "../lib/supabase.ts";
 import PointCard from "../components/PointCard.astro";
 import IconGuide from "../components/IconGuide.astro";
+import type { Point } from "../types/point";
 // import ItineraryFilter from "../components/ItineraryFilter";
 
+import {categoryMap, typeMap} from "../utils/dataMapping.ts";
+import { mapKey } from '../utils/mapKey.ts';
+import { ParseStatus } from "astro:schema";
+
 // Sort by km
+
+let { data: points, error } = await supabase.from("points").select("*").order("km", { ascending: true });
+
+if (error) {
+  console.error("Error fetching points:", error);
+}
+
+if (!points) {
+  return null
+}
+
+points = points.map(p => ({
+  ...p,
+  categoryKey: mapKey(categoryMap, p.category),
+  typeKey: mapKey(typeMap, p.type)
+}));
+
 const sortedPoints = [...points].sort((a, b) => a.km - b.km);
 
 const filter = Astro.url.searchParams.get("filter");
 
 const filteredPoints = sortedPoints.filter((point) => {
   if (!filter || filter === "vse") return true;
-  if (filter === "ubytovani") return point.category == "ubytovani";
-  if (filter === "obcerstveni") return point.category == "obcerstveni";
-  if (filter === "navigace") return point.category == "navigace";
-  if (filter === "doprava") return point.category == "doprava";
-  if (filter === "turisticke_cile") return point.category == "turisticke_cile";
-  if (filter === "ostatni") return point.category == "ostatni";
+  if (filter === "ubytovani") return point.categoryKey == "ubytovani";
+  if (filter === "obcerstveni") return point.categoryKey == "obcerstveni";
+  if (filter === "navigace") return point.categoryKey == "navigace";
+  if (filter === "doprava") return point.categoryKey == "doprava";
+  if (filter === "turisticke_cile") return point.categoryKey == "turisticke_cile";
+  if (filter === "ostatni") return point.categoryKey == "ostatni";
   return true;
 });
 ---

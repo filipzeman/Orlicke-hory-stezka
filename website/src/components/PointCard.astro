@@ -4,8 +4,12 @@ import { getPointIcons } from "../utils/iconMapping";
 import DetailedInfo from "./DetailedInfo.astro";
 import { ETAPE_LENGTH } from "../constants/constants.ts";
 
+import { slugify } from "../utils/slugify.ts";
+
 const { filter, point } = Astro.props;
 const icons = getPointIcons(point);
+
+console.log('no icons')
 
 if (!icons.length) {
   return null;
@@ -23,13 +27,13 @@ const DistanceToEtapeFinish: number = ETAPE_LENGTH - point.km;
     <span class="km-item small">{DistanceToEtapeFinish.toFixed(1)} km</span>
   </div>
   <div class={!filter || filter == "all" ? "content default" : "content"}>
-    <a href={`/bod/${point.slug}`} class="name">
+    <a href={`/bod/${slugify(point.point_name)}`} class="name">
       {filter == "all" || !filter ? (
         <Icon name={pointTypeIcon} />
       ) : (
         <Icon name={pointTypeIcon} size={16} notInteractive />
       )}
-      {point.name}
+      {point.point_name}
     </a>
     {!filter || filter == "all" ? (
       <div class="icons">

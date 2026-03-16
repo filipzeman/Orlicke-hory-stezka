@@ -19,6 +19,14 @@ export interface Point {
   openingHours?: string;
   routeMarking?: RouteMarking;
   note?: string;
+  categoryKey?: PointCategory;
+  typeKey?:
+    | AccomodationTypes
+    | FoodTypes
+    | NavigationTypes
+    | TransportTypes
+    | TuristicGoalTypes
+    | OtherServiceTypes;
 }
 
 export type PointCategory =
