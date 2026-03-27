@@ -1,10 +1,7 @@
 export interface Point {
-  author?: string;
-  slug: string;
-  name: string;
+  id: string;
   km: number;
-  gps_coordinates?: number;
-  elevation?: number;
+  crossroad_number?: string | null;
   category: PointCategory;
   type:
     | AccomodationTypes
@@ -13,20 +10,34 @@ export interface Point {
     | TransportTypes
     | TuristicGoalTypes
     | OtherServiceTypes;
-  website?: string;
-  phone?: string;
-  email?: string;
-  openingHours?: string;
-  routeMarking?: RouteMarking;
-  note?: string;
-  categoryKey?: PointCategory;
+  date: string;
+  author?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  website?: string | null;
+  opening_info?: string | null;
+  elevation?: number | null;
+  latitude: number;
+  longitude: number;
+  navigation_color?: string | null;
+  note?: string | null;
+  hikers_welcome?: boolean | null;
+  photos?: [string | null];
+  created_at: string;
+  active: boolean;
+  location_id?: string | null;
+  location_name?: string | null;
+  point_name: string;
+  slug: string;
+  categoryKey?: PointCategory | null;
   typeKey?:
     | AccomodationTypes
     | FoodTypes
     | NavigationTypes
     | TransportTypes
     | TuristicGoalTypes
-    | OtherServiceTypes;
+    | OtherServiceTypes
+    | null;
 }
 
 export type PointCategory =

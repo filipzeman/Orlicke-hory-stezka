@@ -1,72 +1,91 @@
 ---
+import { supabase } from "../../lib/supabase";
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import { points } from "../../data/mockPoints";
-import Icon from "../../components/Icon.astro";
+import DetailHeader from "../../components/detail/DetailHeader.astro";
+import DetailSummary from "../../components/detail/DetailSummary.astro";
+import DetailSection from "../../components/detail/DetailSection.astro";
+import ServiceCard from "../../components/detail/ServiceCard.astro";
 
-export const prerender = true;
+import { categoryMap, typeMap } from "../../utils/dataMapping";
+import { slugify } from "../../utils/slugify";
 
-export async function getStaticPaths() {
-  return points.map((point) => ({
-    params: { slug: point.slug },
-  }));
-}
-
+// 1. get slug from URL
 const { slug } = Astro.params;
-const point = points.find((p) => p.slug === slug);
 
-if (!point) {
-  throw new Error("Point not found");
+// 2. fetch ALL points (simple & fast enough)
+const { data } = await supabase
+  .from("points")
+  .select("*");
+
+const points = data ?? [];
+
+// 3. normalize (map Czech → keys)
+function mapKey(map: Record<string, string>, value: string | null | undefined) {
+  if (!value) return null;
+  return map[value] ?? null;
 }
+
+const normalized = points.map(p => ({
+  ...p,
+  categoryKey: mapKey(categoryMap, p.category),
+  typeKey: mapKey(typeMap, p.type)
+}));
+
+const normalize = (v: string | undefined) =>
+  v?.toLowerCase().replace(/_/g, "-");
+
+const locationPoints = normalized.filter(p => {
+  // grouped
+  if (p.location_id) {
+    return normalize(p.location_id) === normalize(slug);
+  }
+
+  // standalone (match slugified name)
+  return slugify(p.point_name) === slug;
+});
+
+// 5. get location info
+const location = locationPoints[0] ?? null;
+console.log('location', location);
+
+
+// 6. group by category
+const grouped: Record<string, typeof locationPoints> = {
+  accommodation: locationPoints.filter(p => p.categoryKey === "accommodation"),
+  food: locationPoints.filter(p => p.categoryKey === "food"),
+  transport: locationPoints.filter(p => p.categoryKey === "transport"),
+  navigation: locationPoints.filter(p => p.categoryKey === "navigation"),
+  other: locationPoints.filter(p => p.categoryKey === "other"),
+};
+
+// 7. order of sections
+const sections = [
+  { key: "accommodation", title: "Ubytování" },
+  { key: "food", title: "Občerstvení" },
+  { key: "transport", title: "Doprava" },
+  { key: "navigation", title: "Navigace" },
+  { key: "other", title: "Ostatní" }
+];
 ---
 
-<BaseLayout title={`${point.name} | Orlické hory`}>
-  <section class="container">
-    <h1>{point.name}</h1>
+<BaseLayout title={`${location?.location_name || location?.point_name} | Orlické hory`}>
+ <main class="detail">
+  {location && (
+    <>
+      <DetailHeader location={location} />
 
-    <div class="meta">
-      km {point.km} • {point.elevation} m
-    </div>
+      <DetailSummary services={locationPoints} />
 
-    <p class="intro">
-      {point.note}
-    </p>
-  </section>
+      {sections.map(section => (
+        grouped[section.key]?.length > 0 && (
+          <DetailSection title={section.title}>
+            {grouped[section.key].map(service => (
+              <ServiceCard service={service} />
+            ))}
+          </DetailSection>
+        )
+      ))}
+    </>
+  )}
 
-  <section class="container details">
-    <div class="info-block">
-      <h2>Služby</h2>
-
-      <ul>
-        {
-          (
-            <li>
-              <Icon name="Bed" /> Spaní:{" "}
-            </li>
-          )
-        }
-      </ul>
-    </div>
-  </section>
-</BaseLayout>
-
-<style>
-  .meta {
-    font-size: 0.9rem;
-    opacity: 0.7;
-    margin-bottom: 1rem;
-  }
-
-  .intro {
-    font-size: 1.1rem;
-    max-width: 700px;
-  }
-
-  .details {
-    margin-top: 1rem;
-  }
-
-  li {
-    display: flex;
-    align-items: center;
-  }
-</style>
+</main>

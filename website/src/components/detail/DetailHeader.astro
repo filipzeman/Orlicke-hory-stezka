@@ -1,0 +1,27 @@
+---
+const { location } = Astro.props;
+
+const locationName =
+  location?.location_name || location?.point_name;
+
+console.log('location', location);
+---
+
+<header class="header">
+  <h1>{locationName}</h1>
+  <div class="meta">
+    <span>{location.km} km</span>
+  </div>
+</header>
+
+<style>
+.header h1 {
+  font-size: 1.6rem;
+  margin-bottom: 4px;
+}
+
+.meta {
+  font-size: 0.9rem;
+  color: #666;
+}
+</style>

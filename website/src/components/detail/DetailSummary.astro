@@ -1,0 +1,22 @@
+---
+const { services = [] } = Astro.props;
+
+const has = (type: string) => services.some((s: any) => s.categoryKey === type);
+---
+
+<div class="summary">
+  <div>🛏 {has("accommodation") ? "Ano" : "Ne"}</div>
+  <div>🍽 {has("food") ? "Ano" : "Ne"}</div>
+  <div>💧 {has("water") ? "Ano" : "Ne"}</div>
+  <div>🚌 {has("transport") ? "Ano" : "Ne"}</div>
+</div>
+
+<style>
+.summary {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin: 16px 0;
+  font-size: 0.95rem;
+}
+</style>

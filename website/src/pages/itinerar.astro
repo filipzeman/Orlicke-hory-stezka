@@ -3,32 +3,34 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import { supabase } from "../lib/supabase.ts";
 import PointCard from "../components/PointCard.astro";
 import IconGuide from "../components/IconGuide.astro";
-import type { Point } from "../types/point";
-// import ItineraryFilter from "../components/ItineraryFilter";
 
 import {categoryMap, typeMap} from "../utils/dataMapping.ts";
 import { mapKey } from '../utils/mapKey.ts';
-import { ParseStatus } from "astro:schema";
+import { groupPointsByLocation } from "../utils/groupPoints";
+import type { Point } from "../types/point";
 
-// Sort by km
-
-let { data: points, error } = await supabase.from("points").select("*").order("km", { ascending: true });
+let { data, error } = await supabase.from("points").select("*").order("km", { ascending: true });
 
 if (error) {
   console.error("Error fetching points:", error);
 }
 
+let points = data as Point[];
+
 if (!points) {
   return null
 }
 
-points = points.map(p => ({
-  ...p,
-  categoryKey: mapKey(categoryMap, p.category),
-  typeKey: mapKey(typeMap, p.type)
-}));
+const groupedPoints = groupPointsByLocation(points);
+groupedPoints.sort((a, b) => a.km - b.km);
 
-const sortedPoints = [...points].sort((a, b) => a.km - b.km);
+const sortedPoints = points
+  .map(p => ({
+    ...p,
+    categoryKey: mapKey(categoryMap, p.category),
+    typeKey: mapKey(typeMap, p.type)
+  }))
+  .sort((a, b) => a.km - b.km);
 
 const filter = Astro.url.searchParams.get("filter");
 

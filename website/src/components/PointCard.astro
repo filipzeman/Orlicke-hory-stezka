@@ -9,8 +9,6 @@ import { slugify } from "../utils/slugify.ts";
 const { filter, point } = Astro.props;
 const icons = getPointIcons(point);
 
-console.log('no icons')
-
 if (!icons.length) {
   return null;
 }
@@ -18,6 +16,10 @@ if (!icons.length) {
 const pointTypeIcon: string = icons.shift() || "";
 
 const DistanceToEtapeFinish: number = ETAPE_LENGTH - point.km;
+
+const slug = point.location_id
+  ? point.location_id
+  : slugify(point.point_name);
 
 ---
 
@@ -27,7 +29,7 @@ const DistanceToEtapeFinish: number = ETAPE_LENGTH - point.km;
     <span class="km-item small">{DistanceToEtapeFinish.toFixed(1)} km</span>
   </div>
   <div class={!filter || filter == "all" ? "content default" : "content"}>
-    <a href={`/bod/${slugify(point.point_name)}`} class="name">
+    <a href={`/bod/${slug}`} class="name">
       {filter == "all" || !filter ? (
         <Icon name={pointTypeIcon} />
       ) : (
