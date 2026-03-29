@@ -1,14 +1,15 @@
 ---
+import Icon from "../Icon.astro";
+
 const { services = [] } = Astro.props;
 
 const has = (type: string) => services.some((s: any) => s.categoryKey === type);
 ---
 
 <div class="summary">
-  <div>🛏 {has("accommodation") ? "Ano" : "Ne"}</div>
-  <div>🍽 {has("food") ? "Ano" : "Ne"}</div>
-  <div>💧 {has("water") ? "Ano" : "Ne"}</div>
-  <div>🚌 {has("transport") ? "Ano" : "Ne"}</div>
+ { has("ubytovani") &&  <div><Icon name="Bed" /></div>}
+  <div><Icon name="Utensils" /> {has("obcerstveni") ? "Ano" : "Ne"}</div>
+  <div><Icon name="BusFront" /> {has("doprava") ? "Ano" : "Ne"}</div>
 </div>
 
 <style>

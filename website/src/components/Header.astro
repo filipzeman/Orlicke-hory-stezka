@@ -45,6 +45,8 @@ const firstLevelNavigationItems = createNavItems(FIRST_LEVEL_NAVIGATION);
       z-index: 100;
       background: white;
       border-bottom: 1px solid #eee;
+      /* justify-content: center;
+      display: flex; */
     }
 
     .inner {
@@ -53,10 +55,13 @@ const firstLevelNavigationItems = createNavItems(FIRST_LEVEL_NAVIGATION);
       align-items: center;
       justify-content: space-between;
       padding: 0.7rem 1.5rem;
+      max-width: var(--max-width);
 
       @media (min-width: 768px) {
-        padding: 1.5rem;
+        padding: 20px 1rem;
         flex-direction: row;
+        margin: 0 auto;
+        height: 66px;
       }
     }
 
@@ -102,8 +107,7 @@ const firstLevelNavigationItems = createNavItems(FIRST_LEVEL_NAVIGATION);
     .nav a {
       padding: 0.6rem 0;
       text-decoration: none;
-      color: inherit;
-
+      color: var(--color-text-muted);
       border-bottom: 1px solid #f0f0f0;
 
       &:last-of-type {
@@ -112,8 +116,8 @@ const firstLevelNavigationItems = createNavItems(FIRST_LEVEL_NAVIGATION);
     }
 
     .nav a.active {
-      font-weight: 600;
       color: var(--color-primary);
+      font-weight: 600;
     }
 
     .nav.open {

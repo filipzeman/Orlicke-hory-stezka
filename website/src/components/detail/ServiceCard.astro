@@ -5,39 +5,39 @@ const { service } = Astro.props;
 <div class="card">
   <div class="title">{service.point_name}</div>
 
-  {service.phone && (
-    <a href={`tel:${service.phone}`}>📞 {service.phone}</a>
-  )}
+  {service.phone && <a href={`tel:${service.phone}`}>📞 {service.phone}</a>}
 
-  {service.website && (
-    <a href={service.website} target="_blank">🌐 Web</a>
-  )}
+  {
+    service.website && (
+      <a href={service.website} target="_blank">
+        🌐 Web
+      </a>
+    )
+  }
 
-  {service.opening_info && (
-    <div>🕒 {service.opening_info}</div>
-  )}
+  {service.opening_info && <div>🕒 {service.opening_info}</div>}
 
-  {service.note && (
-    <div class="note">{service.note}</div>
-  )}
+  {service.note && <div class="note">{service.note}</div>}
 </div>
 
 <style>
-.card {
-  padding: 12px;
-  border-radius: 10px;
-  background: #f5f5f5;
-  font-size: 0.95rem;
-}
+  .card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-md);
+    font-size: 0.95rem;
+    border-radius: 10px;
+  }
 
-.title {
-  font-weight: 600;
-  margin-bottom: 4px;
-}
+  .title {
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
 
-.note {
-  margin-top: 6px;
-  font-size: 0.85rem;
-  color: #555;
-}
+  .note {
+    margin-top: 6px;
+    font-size: 0.85rem;
+    color: #555;
+  }
 </style>

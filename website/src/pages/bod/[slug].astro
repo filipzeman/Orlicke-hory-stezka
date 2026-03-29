@@ -13,9 +13,7 @@ import { slugify } from "../../utils/slugify";
 const { slug } = Astro.params;
 
 // 2. fetch ALL points (simple & fast enough)
-const { data } = await supabase
-  .from("points")
-  .select("*");
+const { data } = await supabase.from("points").select("*");
 
 const points = data ?? [];
 
@@ -25,16 +23,15 @@ function mapKey(map: Record<string, string>, value: string | null | undefined) {
   return map[value] ?? null;
 }
 
-const normalized = points.map(p => ({
+const normalized = points.map((p) => ({
   ...p,
   categoryKey: mapKey(categoryMap, p.category),
-  typeKey: mapKey(typeMap, p.type)
+  typeKey: mapKey(typeMap, p.type),
 }));
 
-const normalize = (v: string | undefined) =>
-  v?.toLowerCase().replace(/_/g, "-");
+const normalize = (v: string | undefined) => v?.toLowerCase().replace(/_/g, "-");
 
-const locationPoints = normalized.filter(p => {
+const locationPoints = normalized.filter((p) => {
   // grouped
   if (p.location_id) {
     return normalize(p.location_id) === normalize(slug);
@@ -46,46 +43,50 @@ const locationPoints = normalized.filter(p => {
 
 // 5. get location info
 const location = locationPoints[0] ?? null;
-console.log('location', location);
-
 
 // 6. group by category
 const grouped: Record<string, typeof locationPoints> = {
-  accommodation: locationPoints.filter(p => p.categoryKey === "accommodation"),
-  food: locationPoints.filter(p => p.categoryKey === "food"),
-  transport: locationPoints.filter(p => p.categoryKey === "transport"),
-  navigation: locationPoints.filter(p => p.categoryKey === "navigation"),
-  other: locationPoints.filter(p => p.categoryKey === "other"),
+  ubytovani: locationPoints.filter((p) => p.categoryKey === "ubytovani"),
+  obcerstveni: locationPoints.filter((p) => p.categoryKey === "obcerstveni"),
+  doprava: locationPoints.filter((p) => p.categoryKey === "doprava"),
+  navigace: locationPoints.filter((p) => p.categoryKey === "navigace"),
+  turisticke_cile: locationPoints.filter((p) => p.categoryKey === "turisticke_cile"),
+  ostatni: locationPoints.filter((p) => p.categoryKey === "ostatni"),
 };
 
 // 7. order of sections
 const sections = [
-  { key: "accommodation", title: "Ubytování" },
-  { key: "food", title: "Občerstvení" },
-  { key: "transport", title: "Doprava" },
-  { key: "navigation", title: "Navigace" },
-  { key: "other", title: "Ostatní" }
+  { key: "ubytovani", title: "Ubytování" },
+  { key: "obcerstveni", title: "Občerstvení" },
+  { key: "navigace", title: "Navigace" },
+  { key: "doprava", title: "Dopra" },
+  { key: "turisticke_cile", title: "Turistické cíle" },
+  { key: "ostatni", title: "Ostatní" },
 ];
+
+console.log("sections", sections);
+console.log("grouped", grouped);
 ---
 
 <BaseLayout title={`${location?.location_name || location?.point_name} | Orlické hory`}>
- <main class="detail">
-  {location && (
-    <>
-      <DetailHeader location={location} />
+  <main class="container">
+    {
+      location && (
+        <>
+          <DetailHeader location={location} services={locationPoints} />
 
-      <DetailSummary services={locationPoints} />
-
-      {sections.map(section => (
-        grouped[section.key]?.length > 0 && (
-          <DetailSection title={section.title}>
-            {grouped[section.key].map(service => (
-              <ServiceCard service={service} />
-            ))}
-          </DetailSection>
-        )
-      ))}
-    </>
-  )}
-
-</main>
+          {sections.map(
+            (section) =>
+              grouped[section.key]?.length > 0 && (
+                <DetailSection title={section.title}>
+                  {grouped[section.key].map((service) => (
+                    <ServiceCard service={service} />
+                  ))}
+                </DetailSection>
+              )
+          )}
+        </>
+      )
+    }
+  </main>
+</BaseLayout>

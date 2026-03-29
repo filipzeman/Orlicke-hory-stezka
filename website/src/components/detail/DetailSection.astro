@@ -1,5 +1,7 @@
 ---
 const { title } = Astro.props;
+
+console.log("detail section", title);
 ---
 
 <section class="section">
@@ -10,18 +12,18 @@ const { title } = Astro.props;
 </section>
 
 <style>
-.section {
-  margin-top: 24px;
-}
+  .section {
+    margin-top: 24px;
+  }
 
-.section h2 {
-  font-size: 1.2rem;
-  margin-bottom: 8px;
-}
+  .section h2 {
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+  }
 
-.content {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
+  .content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
 </style>

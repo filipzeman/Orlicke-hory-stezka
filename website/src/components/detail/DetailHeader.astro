@@ -1,27 +1,76 @@
 ---
-const { location } = Astro.props;
+import Icon from "../Icon.astro";
+const { location, services = [] } = Astro.props;
 
-const locationName =
-  location?.location_name || location?.point_name;
+const has = (type: string) => services.some((s: any) => s.categoryKey === type);
 
-console.log('location', location);
+const locationName = location?.location_name || location?.point_name;
 ---
 
 <header class="header">
-  <h1>{locationName}</h1>
-  <div class="meta">
-    <span>{location.km} km</span>
+  <div class="location-info">
+    <h1>{locationName} <span> | {location.km}</span></h1>
+  </div>
+
+  <div class="summary">
+    {
+      has("ubytovani") && (
+        <div>
+          <Icon name="Bed" />
+        </div>
+      )
+    }
+    {
+      has("obcerstveni") && (
+        <div>
+          <Icon name="Utensils" />
+        </div>
+      )
+    }
+    {
+      has("doprava") && (
+        <div>
+          <Icon name="BusFront" />
+        </div>
+      )
+    }
+    {
+      has("turisticke_cile") && (
+        <div>
+          <Icon name="Mountain" />
+        </div>
+      )
+    }
+    {
+      has("ostatni") && (
+        <div>
+          <Icon name="Info" />
+        </div>
+      )
+    }
   </div>
 </header>
 
 <style>
-.header h1 {
-  font-size: 1.6rem;
-  margin-bottom: 4px;
-}
+  .header h1 {
+    font-size: 1.6rem;
+    margin-bottom: 4px;
 
-.meta {
-  font-size: 0.9rem;
-  color: #666;
-}
+    span {
+      font-weight: 400;
+    }
+  }
+
+  .location-info {
+    display: flex;
+    align-items: center;
+    font-size: 1.6rem;
+    font-weight: 700;
+    gap: 12px;
+  }
+  .summary {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
 </style>

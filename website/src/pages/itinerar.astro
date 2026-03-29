@@ -2,10 +2,11 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { supabase } from "../lib/supabase.ts";
 import PointCard from "../components/PointCard.astro";
+import Icon from "../components/Icon.astro";
 import IconGuide from "../components/IconGuide.astro";
 
-import {categoryMap, typeMap} from "../utils/dataMapping.ts";
-import { mapKey } from '../utils/mapKey.ts';
+import { categoryMap, typeMap } from "../utils/dataMapping.ts";
+import { mapKey } from "../utils/mapKey.ts";
 import { groupPointsByLocation } from "../utils/groupPoints";
 import type { Point } from "../types/point";
 
@@ -18,17 +19,17 @@ if (error) {
 let points = data as Point[];
 
 if (!points) {
-  return null
+  return null;
 }
 
 const groupedPoints = groupPointsByLocation(points);
 groupedPoints.sort((a, b) => a.km - b.km);
 
 const sortedPoints = points
-  .map(p => ({
+  .map((p) => ({
     ...p,
     categoryKey: mapKey(categoryMap, p.category),
-    typeKey: mapKey(typeMap, p.type)
+    typeKey: mapKey(typeMap, p.type),
   }))
   .sort((a, b) => a.km - b.km);
 
@@ -44,6 +45,16 @@ const filteredPoints = sortedPoints.filter((point) => {
   if (filter === "ostatni") return point.categoryKey == "ostatni";
   return true;
 });
+
+const filters = [
+  { key: "vse", label: "Vše" },
+  { key: "ubytovani", label: "Ubytování", icon: "Bed" },
+  { key: "obcerstveni", label: "Občerstvení", icon: "Utensils" },
+  { key: "navigace", label: "Navigace", icon: "Signpost" },
+  { key: "doprava", label: "Doprava", icon: "BusFront" },
+  { key: "turisticke_cile", label: "Turistické cíle", icon: "Mountain" },
+  { key: "ostatni", label: "Ostatní", icon: "Info" },
+];
 ---
 
 <BaseLayout title="Itinerář | Orlické hory">
@@ -53,42 +64,32 @@ const filteredPoints = sortedPoints.filter((point) => {
   </section>
 
   <section class="container">
-    <IconGuide />
+    <!-- <IconGuide /> -->
     <div class="filters">
-      <div class="filters-caption">Filtrovat</div>
-      <div class="filters-actions">
-        <a href="/itinerar" class={!filter ? "active button primary" : "button primary"}>Vše</a>
-        <a
-          href="/itinerar?filter=ubytovani"
-          class={filter == "ubytovani" ? "active button primary" : "button primary"}>Ubytování</a
-        >
-        <a
-          href="/itinerar?filter=obcerstveni"
-          class={filter == "obcerstveni" ? "active button primary" : "button primary"}>Jídlo</a
-        >
-        <a
-          href="/itinerar?filter=navigace"
-          class={filter == "navigace" ? "active button primary" : "button primary"}>Navigace</a
-        >
-        <a
-          href="/itinerar?filter=doprava"
-          class={filter == "doprava" ? "active button primary" : "button primary"}>Doprava</a
-        >
-        <a
-          href="/itinerar?filter=turisticke_cile"
-          class={filter == "turisticke_cile" ? "active button primary" : "button primary"}
-          >Turistické cíle</a
-        >
-        <a
-          href="/itinerar?filter=ostatni"
-          class={filter == "ostatni" ? "active button primary" : "button primary"}>Ostatní</a
-        >
+      <div class="filters-wrapper">
+        <div class="filters">
+          {
+            filters.map((f) => (
+              <a
+                href={`/itinerar?filter=${f.key}`}
+                class={`filter ${(filter ?? "vse") === f.key ? "active" : ""}`}
+              >
+                <Icon name={f.icon} size={16} notInteractive />
+                <span>{f.label}</span>
+              </a>
+            ))
+          }
+        </div>
       </div>
     </div>
   </section>
 
   <section class="container points">
-    {filteredPoints.map((point) => <PointCard filter={filter} point={point} />)}
+    {
+      filteredPoints.map((point, index) => (
+        <PointCard filter={filter} point={point} last={index === filteredPoints.length - 1} />
+      ))
+    }
   </section>
 </BaseLayout>
 
@@ -96,27 +97,51 @@ const filteredPoints = sortedPoints.filter((point) => {
   .points {
     display: flex;
     flex-direction: column;
+    padding-left: 20px;
     /* gap: 1rem; */
   }
 
+  /* label */
+  .filters-label {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    margin-bottom: 6px;
+  }
+
+  /* container */
   .filters {
     display: flex;
-    gap: 1rem;
-    align-items: baseline;
-    font-weight: 700;
+    gap: 8px;
   }
 
-  .filters-actions {
+  /* button */
+  .filter {
+    flex: 0 0 auto;
     display: flex;
-    gap: 0.8rem;
-    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+
+    padding: 8px 12px;
+    border-radius: 999px;
+
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+    color: var(--color-text);
+
+    text-decoration: none;
+    font-size: 0.9rem;
+    white-space: nowrap;
   }
 
-  .filters-caption {
-    display: none;
+  /* active */
+  .filter.active {
+    background: var(--color-primary);
+    color: white;
+    border-color: var(--color-primary);
+  }
 
-    @media (min-width: 768px) {
-      display: block;
-    }
+  /* icon inside active */
+  .filter.active svg {
+    color: white;
   }
 </style>
