@@ -7,7 +7,6 @@ import { slugify } from "../utils/slugify.ts";
 
 const { filter, point, last } = Astro.props;
 
-// icons
 const icons = getPointIcons(point);
 
 if (!icons.length) {
@@ -16,13 +15,10 @@ if (!icons.length) {
 
 const pointTypeIcon: string = icons.shift() || "";
 
-// distance (optional)
-const DistanceToEtapeFinish: number = ETAPE_LENGTH - point.km;
+const distanceToEtapeFinish: number = Math.max(0, ETAPE_LENGTH - point.km);
 
 // slug (grouped vs standalone)
-const slug = point.location_id
-  ? point.location_id
-  : slugify(point.point_name);
+const slug = point.location_id ? point.location_id : slugify(point.point_name);
 
 // navigation mode
 const isNavigation = filter === "navigace";
@@ -44,10 +40,8 @@ function getColor(color: string) {
 }
 
 // line color (only for navigation)
-const lineColor = isNavigation && point.navigation_color
-  ? getColor(point.navigation_color)
-  : "#747474";
-
+const lineColor =
+  isNavigation && point.navigation_color ? getColor(point.navigation_color) : "#747474";
 ---
 
 <div
@@ -57,8 +51,6 @@ const lineColor = isNavigation && point.navigation_color
   <!-- KM -->
   <div class="km">
     <span>{point.km}</span>
-    <!-- optional -->
-    <!-- <span class="small">{DistanceToEtapeFinish.toFixed(1)} km</span> -->
   </div>
 
   <!-- CONTENT -->
@@ -68,101 +60,102 @@ const lineColor = isNavigation && point.navigation_color
       <Icon name={pointTypeIcon} size={18} notInteractive />
     </a>
 
-    {filter === "ubytovani" || filter === "obcerstveni" ? (
-      <DetailedInfo point={point} />
-    ) : (
-      
-      <div class="icons">
-        {icons.map((icon) => (
-          <Icon name={icon} notInteractive />
-        ))}
-      </div>
-    )}
+    {
+      filter === "ubytovani" || filter === "obcerstveni" ? (
+        <DetailedInfo point={point} />
+      ) : (
+        <div class="icons">
+          {icons.map((icon) => (
+            <Icon name={icon} notInteractive />
+          ))}
+        </div>
+      )
+    }
   </div>
 </div>
 
 <style>
-.item {
-  display: grid;
-  grid-template-columns: 60px 1fr;
-  gap: 1rem;
-  position: relative;
-  align-content: center;
-}
+  .item {
+    display: grid;
+    grid-template-columns: 60px 1fr;
+    gap: 1rem;
+    position: relative;
+    align-content: center;
+  }
 
-/* DOT (anchor point) */
-.item::before {
-  position: absolute;
-  content: "";
-  left: -12px;
-  top: 0.9rem;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: white;
-  border: 2px solid black;
-  z-index: 2;
-}
+  /* DOT (anchor point) */
+  .item::before {
+    position: absolute;
+    content: "";
+    left: -2px;
+    top: 0.9rem;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: white;
+    border: 2px solid black;
+    z-index: 2;
+  }
 
-/* LINE SEGMENT */
-.item::after {
-  content: "";
-  position: absolute;
-  left: -6px;
-  top: 1.1rem;
-  bottom: -1rem;
-  width: 2px;
-  background: var(--line-color, #747474);
-  z-index: 1;
-}
+  /* LINE SEGMENT */
+  .item::after {
+    content: "";
+    position: absolute;
+    left: 4px;
+    top: 1.1rem;
+    bottom: -1rem;
+    width: 2px;
+    background: var(--line-color, #747474);
+    z-index: 1;
+  }
 
-/* last item → no segment */
-.item.last::after {
-  display: none;
-}
+  /* last item → no segment */
+  .item.last::after {
+    display: none;
+  }
 
-/* navigation mode → colored dot
+  /* navigation mode → colored dot
 .item.navigation::before {
   background: var(--line-color);
   border-color: var(--line-color);
 } */
 
-/* KM */
-.km {
-  font-weight: 700;
-  font-size: 1rem;
-  color: var(--color-primary);
-  text-align: right;
-  padding-left: 1rem;
-  padding-top: 0.4rem;
-}
+  /* KM */
+  .km {
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--color-primary);
+    text-align: right;
+    padding-left: 1rem;
+    padding-top: 0.4rem;
+  }
 
-/* CONTENT */
-.content {
-  display: flex;
-  flex-direction: column;
-  padding: 0.4rem 0;
-}
+  /* CONTENT */
+  .content {
+    display: flex;
+    flex-direction: column;
+    padding: 0.4rem 0;
+  }
 
-/* NAME */
-.name {
-  font-weight: 600;
-  text-decoration: none;
-  color: inherit;
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-}
+  /* NAME */
+  .name {
+    font-weight: 600;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
 
-/* ICONS */
-.icons {
-  display: flex;
-  gap: 0.4rem;
-}
+  /* ICONS */
+  .icons {
+    display: flex;
+    gap: 0.4rem;
+  }
 
-/* optional */
-.small {
-  font-size: 0.75rem;
-  opacity: 0.6;
-}
+  /* optional */
+  .small {
+    font-size: 0.75rem;
+    opacity: 0.6;
+  }
 </style>

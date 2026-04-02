@@ -1,0 +1,102 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { createSupabaseServerClient } from "../../lib/supabaseServer";
+
+// auth check
+const supabase = createSupabaseServerClient(Astro);
+
+const {
+  data: { session },
+} = await supabase.auth.getSession();
+
+if (!session) {
+  return Astro.redirect("/admin/login");
+}
+
+// fetch points for dropdown
+const { data: points } = await supabase.from("points").select("id, point_name").order("point_name");
+
+// handle upload
+if (Astro.request.method === "POST") {
+  const formData = await Astro.request.formData();
+
+  const point_id = formData.get("point_id")?.toString();
+  const files = formData.getAll("files");
+
+  for (const file of files) {
+    if (!file || typeof file === "string") continue;
+
+    console.log("FILES:", files);
+    console.log("FILE:", file, typeof file);
+
+    // safer filename
+    const fileName = `${Date.now()}-${file.name}`;
+    const filePath = `points/${point_id}/${fileName}`;
+
+    // upload to storage
+    const { error: uploadError } = await supabase.storage.from("images").upload(filePath, file);
+
+    if (uploadError) {
+      console.error("❌ Upload failed:", uploadError);
+      throw uploadError;
+    }
+
+    // get public URL
+    const { data } = supabase.storage.from("images").getPublicUrl(filePath);
+
+    // insert into DB
+    await supabase.from("images").insert({
+      point_id,
+      url: data.publicUrl,
+    });
+  }
+
+  return Astro.redirect("/admin/upload?success=1");
+}
+
+const success = Astro.url.searchParams.get("success");
+---
+
+<BaseLayout title="Upload">
+  <section class="container">
+    <h1>Nahrát obrázky</h1>
+
+    {success && <p>✅ Obrázky nahrány</p>}
+
+    <form method="POST" enctype="multipart/form-data" class="form">
+      <label>Bod</label>
+      <select name="point_id" required>
+        <option value="">-- Vyber bod --</option>
+        {points?.map((p) => <option value={p.id}>{p.point_name}</option>)}
+      </select>
+
+      <label>Obrázky</label>
+      <input type="file" name="files" multiple required />
+
+      <button type="submit"> Nahrát</button>
+    </form>
+  </section>
+</BaseLayout>
+
+<style>
+  .form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 500px;
+  }
+
+  select,
+  input {
+    padding: 10px;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+  }
+
+  button {
+    padding: 10px 12px;
+    background: var(--color-primary);
+    color: white;
+    border-radius: 8px;
+  }
+</style>

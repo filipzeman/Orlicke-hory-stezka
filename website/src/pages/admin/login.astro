@@ -1,0 +1,64 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { createSupabaseServerClient } from "../../lib/supabaseServer";
+
+let errorMessage = "";
+
+if (Astro.request.method === "POST") {
+  const supabase = createSupabaseServerClient(Astro);
+
+  const formData = await Astro.request.formData();
+  const email = formData.get("email")?.toString() || "";
+  const password = formData.get("password")?.toString() || "";
+
+  const { error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
+
+  if (error) {
+    errorMessage = error.message;
+  } else {
+    return Astro.redirect("/admin/upload");
+  }
+}
+---
+
+<BaseLayout title="Login">
+  <section class="container">
+    <form method="POST">
+      <h1>Přihlášení</h1>
+
+      {errorMessage && <p>{errorMessage}</p>}
+
+      <input name="email" type="email" required />
+      <input name="password" type="password" required />
+
+      <button type="submit">Login</button>
+    </form>
+  </section>
+</BaseLayout>
+
+<style>
+  .form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 500px;
+  }
+
+  select,
+  input {
+    padding: 10px;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+  }
+
+  button {
+    padding: 9px 12px;
+    background: var(--color-primary);
+    color: white;
+    border-radius: 8px;
+    min-width: 120px;
+  }
+</style>

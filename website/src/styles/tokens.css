@@ -23,4 +23,7 @@
   --font-size-sm: 0.85rem;
   --font-size-base: 1rem;
   --font-size-lg: 1.2rem;
+
+  /* LAYOUT */
+  --max-width: 1100px;
 }

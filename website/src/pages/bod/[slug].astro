@@ -2,9 +2,9 @@
 import { supabase } from "../../lib/supabase";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import DetailHeader from "../../components/detail/DetailHeader.astro";
-import DetailSummary from "../../components/detail/DetailSummary.astro";
 import DetailSection from "../../components/detail/DetailSection.astro";
 import ServiceCard from "../../components/detail/ServiceCard.astro";
+import DetailGallery from "../../components/detail/DetailGallery.astro";
 
 import { categoryMap, typeMap } from "../../utils/dataMapping";
 import { slugify } from "../../utils/slugify";
@@ -41,6 +41,20 @@ const locationPoints = normalized.filter((p) => {
   return slugify(p.point_name) === slug;
 });
 
+// 5.1 collect point IDs for images
+const pointIds = locationPoints.map((p) => p.id);
+
+// 5.2 fetch images
+const { data: imagesData } = await supabase
+  .from("images")
+  .select("url")
+  .in("point_id", pointIds)
+  .order("created_at", { ascending: false });
+
+const images = imagesData?.map((img) => img.url) || [];
+
+console.log("IMAGES:", images);
+
 // 5. get location info
 const location = locationPoints[0] ?? null;
 
@@ -58,13 +72,12 @@ const grouped: Record<string, typeof locationPoints> = {
 const sections = [
   { key: "ubytovani", title: "Ubytování" },
   { key: "obcerstveni", title: "Občerstvení" },
-  { key: "navigace", title: "Navigace" },
+  // { key: "navigace", title: "Navigace" },
   { key: "doprava", title: "Dopra" },
   { key: "turisticke_cile", title: "Turistické cíle" },
   { key: "ostatni", title: "Ostatní" },
 ];
 
-console.log("sections", sections);
 console.log("grouped", grouped);
 ---
 
@@ -74,6 +87,7 @@ console.log("grouped", grouped);
       location && (
         <>
           <DetailHeader location={location} services={locationPoints} />
+          <DetailGallery images={images} />
 
           {sections.map(
             (section) =>
