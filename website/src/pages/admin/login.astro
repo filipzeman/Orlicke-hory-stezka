@@ -26,7 +26,7 @@ if (Astro.request.method === "POST") {
 
 <BaseLayout title="Login">
   <section class="container">
-    <form method="POST">
+    <form method="POST" action="/admin/login">
       <h1>Přihlášení</h1>
 
       {errorMessage && <p>{errorMessage}</p>}
