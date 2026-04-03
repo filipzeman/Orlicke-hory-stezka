@@ -1,4 +1,6 @@
 ---
+Astro.response.headers.set("Cache-Control", "no-store");
+
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { getSupabase } from "../lib/supabase.ts";
 import PointCard from "../components/PointCard.astro";

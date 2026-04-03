@@ -1,4 +1,6 @@
 ---
+Astro.response.headers.set("Cache-Control", "no-store");
+
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { getSupabase } from "../lib/supabase";
 
@@ -9,7 +11,8 @@ const { data: points } = await supabase.from("points").select("id, point_name").
 const { data: images } = await supabase
   .from("images")
   .select("id, url, point_id")
-  .order("id", { ascending: false });
+  .order("created_at", { ascending: false })
+  .limit(12);
 
 const pointMap = Object.fromEntries((points ?? []).map((p) => [p.id, p.point_name]));
 ---

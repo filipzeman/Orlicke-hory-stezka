@@ -1,4 +1,6 @@
 ---
+Astro.response.headers.set("Cache-Control", "no-store");
+
 import { getSupabase } from "../../lib/supabase";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import DetailHeader from "../../components/detail/DetailHeader.astro";
