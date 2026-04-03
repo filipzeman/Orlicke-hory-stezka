@@ -14,12 +14,9 @@ export async function POST({ request, cookies }) {
   });
 
   if (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 400,
-    });
+    return new Response("Invalid login", { status: 401 });
   }
 
-  return new Response(JSON.stringify({ success: true }), {
-    status: 200,
-  });
+  // ✅ FIXED redirect
+  return Response.redirect(new URL("/admin/upload", request.url), 302);
 }

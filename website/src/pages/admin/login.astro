@@ -7,12 +7,11 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     <main class="admin">
       <h1>Přihlášení</h1>
 
-      <form id="login-form" class="form">
-        <input type="email" name="email" placeholder="Email" required />
+      <form method="POST" action="/api/login" class="form">
+        <input name="email" type="email" required />
+        <input name="password" type="password" required />
 
-        <input type="password" name="password" placeholder="Heslo" required />
-
-        <button type="submit"> Přihlásit</button>
+        <button type="submit">Přihlásit</button>
       </form>
 
       <p id="error" class="error"></p>
