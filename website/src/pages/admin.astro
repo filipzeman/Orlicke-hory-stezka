@@ -136,6 +136,7 @@ const pointMap = Object.fromEntries((points ?? []).map((p) => [p.id, p.point_nam
           const res = await fetch("/api/upload", {
             method: "POST",
             body: formData,
+            credentials: "same-origin",
           });
 
           if (res.ok) {
