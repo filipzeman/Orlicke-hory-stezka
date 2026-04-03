@@ -35,6 +35,8 @@ const sortedPoints = points
 
 const filter = Astro.url.searchParams.get("filter");
 
+console.log("ENV URL:", import.meta.env.PUBLIC_SUPABASE_URL);
+
 const filteredPoints = sortedPoints.filter((point) => {
   if (!filter || filter === "vse") return true;
   if (filter === "ubytovani") return point.categoryKey == "ubytovani";
