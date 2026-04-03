@@ -126,7 +126,7 @@ const pointMap = Object.fromEntries((points ?? []).map((p) => [p.id, p.point_nam
         showLogin();
       });
 
-      // 🔥 FIXED UPLOAD HANDLER
+      // 🔥 upload
       if (form) {
         form.addEventListener("submit", async (e) => {
           e.preventDefault();
@@ -135,35 +135,42 @@ const pointMap = Object.fromEntries((points ?? []).map((p) => [p.id, p.point_nam
           const files = formData.getAll("files");
           const point_id = formData.get("point_id");
 
-          for (const file of files) {
-            if (!file || typeof file === "string") continue;
+          try {
+            await Promise.all(
+              files.map(async (file) => {
+                if (!file || typeof file === "string") return;
 
-            const filePath = `points/${point_id}/${Date.now()}-${file.name}`;
+                const filePath = `points/${point_id}/${Date.now()}-${file.name}`;
 
-            // 🔥 DIRECT upload to Supabase (no API route)
-            const { error: uploadError } = await supabase.storage
-              .from("images")
-              .upload(filePath, file);
+                const { error: uploadError } = await supabase.storage
+                  .from("images")
+                  .upload(filePath, file);
 
-            if (uploadError) {
-              console.error(uploadError);
-              alert("❌ Upload failed");
-              return;
-            }
+                if (uploadError) throw uploadError;
 
-            const { data } = supabase.storage.from("images").getPublicUrl(filePath);
+                const { data } = supabase.storage.from("images").getPublicUrl(filePath);
 
-            await supabase.from("images").insert({
-              point_id,
-              url: data.publicUrl,
-            });
+                const { error: dbError } = await supabase.from("images").insert({
+                  point_id,
+                  url: data.publicUrl,
+                });
+
+                if (dbError) throw dbError;
+              })
+            );
+
+            // ✅ ONLY runs after ALL uploads finish
+            showToast("✅ Obrázky nahrány");
+
+            form.reset();
+
+            const fileInput = form.querySelector('input[type="file"]');
+            if (fileInput) fileInput.value = "";
+          } catch (err) {
+            console.error(err);
+            showToast("❌ Upload selhal");
           }
-
-          alert("✅ Upload successful");
-          window.location.reload();
         });
-      } else {
-        console.error("❌ upload-form not found");
       }
 
       function showLogin() {
@@ -174,6 +181,18 @@ const pointMap = Object.fromEntries((points ?? []).map((p) => [p.id, p.point_nam
       function showDashboard() {
         loginEl.classList.add("hidden");
         dashboardEl.classList.remove("hidden");
+      }
+
+      // 🔥 TOAST
+      function showToast(message) {
+        const toast = document.createElement("div");
+        toast.textContent = message;
+        toast.className = "toast";
+        document.body.appendChild(toast);
+
+        setTimeout(() => {
+          toast.remove();
+        }, 3000);
       }
     });
   </script>
@@ -251,5 +270,19 @@ const pointMap = Object.fromEntries((points ?? []).map((p) => [p.id, p.point_nam
 
   .error {
     color: #c53030;
+  }
+
+  /* 🔥 TOAST */
+  .toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--color-primary);
+    color: white;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   }
 </style>
