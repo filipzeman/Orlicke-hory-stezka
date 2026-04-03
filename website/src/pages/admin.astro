@@ -132,19 +132,35 @@ const pointMap = Object.fromEntries((points ?? []).map((p) => [p.id, p.point_nam
           e.preventDefault();
 
           const formData = new FormData(form);
+          const files = formData.getAll("files");
+          const point_id = formData.get("point_id");
 
-          const res = await fetch("/api/upload", {
-            method: "POST",
-            body: formData,
-            credentials: "same-origin",
-          });
+          for (const file of files) {
+            if (!file || typeof file === "string") continue;
 
-          if (res.ok) {
-            alert("✅ Obrázky nahrány");
-            window.location.reload();
-          } else {
-            alert("❌ Upload selhal");
+            const filePath = `points/${point_id}/${Date.now()}-${file.name}`;
+
+            // 🔥 DIRECT upload to Supabase (no API route)
+            const { error: uploadError } = await supabase.storage
+              .from("images")
+              .upload(filePath, file);
+
+            if (uploadError) {
+              console.error(uploadError);
+              alert("❌ Upload failed");
+              return;
+            }
+
+            const { data } = supabase.storage.from("images").getPublicUrl(filePath);
+
+            await supabase.from("images").insert({
+              point_id,
+              url: data.publicUrl,
+            });
           }
+
+          alert("✅ Upload successful");
+          window.location.reload();
         });
       } else {
         console.error("❌ upload-form not found");
