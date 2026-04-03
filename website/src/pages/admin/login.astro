@@ -1,64 +1,83 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import { createSupabaseServerClient } from "../../lib/supabaseServer";
-
-let errorMessage = "";
-
-if (Astro.request.method === "POST") {
-  const supabase = createSupabaseServerClient(Astro);
-
-  const formData = await Astro.request.formData();
-  const email = formData.get("email")?.toString() || "";
-  const password = formData.get("password")?.toString() || "";
-
-  const { error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  });
-
-  if (error) {
-    errorMessage = error.message;
-  } else {
-    return Astro.redirect("/admin/upload");
-  }
-}
 ---
 
-<BaseLayout title="Login">
+<BaseLayout title="Admin login">
   <section class="container">
-    <form method="POST" action="/admin/login">
+    <main class="admin">
       <h1>Přihlášení</h1>
 
-      {errorMessage && <p>{errorMessage}</p>}
+      <form id="login-form" class="form">
+        <input type="email" name="email" placeholder="Email" required />
 
-      <input name="email" type="email" required />
-      <input name="password" type="password" required />
+        <input type="password" name="password" placeholder="Heslo" required />
 
-      <button type="submit">Login</button>
-    </form>
+        <button type="submit"> Přihlásit</button>
+      </form>
+
+      <p id="error" class="error"></p>
+    </main>
   </section>
+
+  <script type="module">
+    const form = document.getElementById("login-form");
+    const errorEl = document.getElementById("error");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      errorEl.textContent = "";
+
+      const formData = new FormData(form);
+
+      const res = await fetch("/api/login", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (res.ok) {
+        window.location.href = "/admin/upload";
+      } else {
+        const data = await res.json();
+        errorEl.textContent = data.error || "Chyba při přihlášení";
+      }
+    });
+  </script>
 </BaseLayout>
 
 <style>
+  .admin {
+    max-width: 420px;
+    margin: 0 auto;
+    padding: 24px 16px;
+  }
+
   .form {
     display: flex;
     flex-direction: column;
     gap: 12px;
-    max-width: 500px;
   }
 
-  select,
   input {
-    padding: 10px;
-    border: 1px solid var(--color-border);
+    padding: 12px;
     border-radius: 8px;
+    border: 1px solid var(--color-border);
+    font-size: 1rem;
   }
 
   button {
-    padding: 9px 12px;
+    padding: 12px;
+    border-radius: 8px;
+    border: none;
     background: var(--color-primary);
     color: white;
-    border-radius: 8px;
-    min-width: 120px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .error {
+    color: #c53030;
+    font-size: 0.9rem;
+    margin-top: 8px;
   }
 </style>
