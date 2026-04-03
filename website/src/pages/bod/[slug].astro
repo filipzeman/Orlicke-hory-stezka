@@ -1,10 +1,12 @@
 ---
-import { supabase } from "../../lib/supabase";
+import { getSupabase } from "../../lib/supabase";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import DetailHeader from "../../components/detail/DetailHeader.astro";
 import DetailSection from "../../components/detail/DetailSection.astro";
 import ServiceCard from "../../components/detail/ServiceCard.astro";
 import DetailGallery from "../../components/detail/DetailGallery.astro";
+
+const supabase = getSupabase();
 
 import { categoryMap, typeMap } from "../../utils/dataMapping";
 import { slugify } from "../../utils/slugify";

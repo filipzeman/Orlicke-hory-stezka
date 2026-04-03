@@ -1,6 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { supabase } from "../lib/supabase.ts";
+import { getSupabase } from "../lib/supabase.ts";
 import PointCard from "../components/PointCard.astro";
 import Icon from "../components/Icon.astro";
 import IconGuide from "../components/IconGuide.astro";
@@ -10,6 +10,7 @@ import { mapKey } from "../utils/mapKey.ts";
 import { groupPointsByLocation } from "../utils/groupPoints";
 import type { Point } from "../types/point";
 
+const supabase = getSupabase();
 let { data, error } = await supabase.from("points").select("*").order("km", { ascending: true });
 
 if (error) {
