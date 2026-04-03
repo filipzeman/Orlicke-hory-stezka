@@ -30,16 +30,17 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 
       const formData = new FormData(form);
 
-      const res = await fetch("/api/login", {
+      const res = fetch("/api/login", {
         method: "POST",
         body: formData,
+        credentials: "same-origin",
       });
 
       if (res.ok) {
         window.location.href = "/admin/upload";
       } else {
-        const data = await res.json();
-        errorEl.textContent = data.error || "Chyba při přihlášení";
+        const text = await res.text(); // 👈 safer
+        errorEl.textContent = text || "Chyba při přihlášení";
       }
     });
   </script>
