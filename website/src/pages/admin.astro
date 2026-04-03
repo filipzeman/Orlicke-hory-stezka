@@ -2,7 +2,6 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { getSupabase } from "../lib/supabase";
 
-// 🔹 SERVER: fetch data for UI
 const supabase = getSupabase();
 
 const { data: points } = await supabase.from("points").select("id, point_name").order("point_name");
@@ -12,7 +11,6 @@ const { data: images } = await supabase
   .select("id, url, point_id")
   .order("id", { ascending: false });
 
-// map point_id → name
 const pointMap = Object.fromEntries((points ?? []).map((p) => [p.id, p.point_name]));
 ---
 
@@ -26,7 +24,6 @@ const pointMap = Object.fromEntries((points ?? []).map((p) => [p.id, p.point_nam
       <input id="password" type="password" placeholder="Heslo" />
 
       <button id="login-btn">Přihlásit</button>
-
       <p id="error" class="error"></p>
     </div>
 
@@ -44,7 +41,13 @@ const pointMap = Object.fromEntries((points ?? []).map((p) => [p.id, p.point_nam
             {points?.map((p) => <option value={p.id}>{p.point_name}</option>)}
           </select>
 
-          <input type="file" name="files" multiple required />
+          <input
+            type="file"
+            name="files"
+            multiple
+            accept="image/jpeg,image/png,image/webp"
+            required
+          />
 
           <button type="submit">Nahrát</button>
         </form>
@@ -59,7 +62,6 @@ const pointMap = Object.fromEntries((points ?? []).map((p) => [p.id, p.point_nam
             images?.map((img) => (
               <div class="image-item">
                 <img src={img.url} loading="lazy" />
-
                 <div class="meta">{pointMap[img.point_id] || "Neznámý bod"}</div>
               </div>
             ))
@@ -79,78 +81,84 @@ const pointMap = Object.fromEntries((points ?? []).map((p) => [p.id, p.point_nam
     };
   </script>
 
-  <!-- CLIENT LOGIC -->
+  <!-- CLIENT -->
   <script type="module">
     import { createClient } from "https://esm.sh/@supabase/supabase-js";
 
-    const supabase = createClient(window.ENV.SUPABASE_URL, window.ENV.SUPABASE_KEY);
+    document.addEventListener("DOMContentLoaded", async () => {
+      const supabase = createClient(window.ENV.SUPABASE_URL, window.ENV.SUPABASE_KEY);
 
-    const loginEl = document.getElementById("login");
-    const dashboardEl = document.getElementById("dashboard");
+      const loginEl = document.getElementById("login");
+      const dashboardEl = document.getElementById("dashboard");
 
-    const emailEl = document.getElementById("email");
-    const passwordEl = document.getElementById("password");
-    const loginBtn = document.getElementById("login-btn");
-    const logoutBtn = document.getElementById("logout-btn");
-    const errorEl = document.getElementById("error");
+      const emailEl = document.getElementById("email");
+      const passwordEl = document.getElementById("password");
+      const loginBtn = document.getElementById("login-btn");
+      const logoutBtn = document.getElementById("logout-btn");
+      const errorEl = document.getElementById("error");
 
-    const form = document.getElementById("upload-form");
+      const form = document.getElementById("upload-form");
 
-    // 🔹 session check
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
+      // 🔹 session
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
 
-    if (session) showDashboard();
-    else showLogin();
+      if (session) showDashboard();
+      else showLogin();
 
-    // 🔹 login
-    loginBtn?.addEventListener("click", async () => {
-      errorEl.textContent = "";
+      // 🔹 login
+      loginBtn?.addEventListener("click", async () => {
+        errorEl.textContent = "";
 
-      const { error } = await supabase.auth.signInWithPassword({
-        email: emailEl.value,
-        password: passwordEl.value,
+        const { error } = await supabase.auth.signInWithPassword({
+          email: emailEl.value,
+          password: passwordEl.value,
+        });
+
+        if (error) errorEl.textContent = error.message;
+        else showDashboard();
       });
 
-      if (error) errorEl.textContent = error.message;
-      else showDashboard();
-    });
-
-    // 🔹 logout
-    logoutBtn?.addEventListener("click", async () => {
-      await supabase.auth.signOut();
-      showLogin();
-    });
-
-    // 🔹 upload via fetch (IMPORTANT FIX)
-    form?.addEventListener("submit", async (e) => {
-      e.preventDefault();
-
-      const formData = new FormData(form);
-
-      const res = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
+      // 🔹 logout
+      logoutBtn?.addEventListener("click", async () => {
+        await supabase.auth.signOut();
+        showLogin();
       });
 
-      if (res.ok) {
-        alert("✅ Obrázky nahrány");
-        window.location.reload();
+      // 🔥 FIXED UPLOAD HANDLER
+      if (form) {
+        form.addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const formData = new FormData(form);
+
+          const res = await fetch("/api/upload", {
+            method: "POST",
+            body: formData,
+          });
+
+          if (res.ok) {
+            alert("✅ Obrázky nahrány");
+            window.location.reload();
+          } else {
+            alert("❌ Upload selhal");
+          }
+        });
       } else {
-        alert("❌ Upload selhal");
+        console.error("❌ upload-form not found");
+      }
+
+      function showLogin() {
+        loginEl.classList.remove("hidden");
+        dashboardEl.classList.add("hidden");
+      }
+
+      function showDashboard() {
+        loginEl.classList.add("hidden");
+        dashboardEl.classList.remove("hidden");
       }
     });
-
-    function showLogin() {
-      loginEl.classList.remove("hidden");
-      dashboardEl.classList.add("hidden");
-    }
-
-    function showDashboard() {
-      loginEl.classList.add("hidden");
-      dashboardEl.classList.remove("hidden");
-    }
   </script>
 </BaseLayout>
 
@@ -161,7 +169,6 @@ const pointMap = Object.fromEntries((points ?? []).map((p) => [p.id, p.point_nam
     padding: 16px;
   }
 
-  /* cards */
   .card {
     background: var(--color-surface);
     border: 1px solid var(--color-border);
@@ -170,14 +177,12 @@ const pointMap = Object.fromEntries((points ?? []).map((p) => [p.id, p.point_nam
     margin-bottom: 16px;
   }
 
-  /* form */
   .form {
     display: flex;
     flex-direction: column;
     gap: 10px;
   }
 
-  /* inputs */
   input,
   select {
     padding: 12px;
@@ -185,7 +190,6 @@ const pointMap = Object.fromEntries((points ?? []).map((p) => [p.id, p.point_nam
     border: 1px solid var(--color-border);
   }
 
-  /* buttons */
   button {
     padding: 12px;
     border-radius: 8px;
@@ -195,13 +199,11 @@ const pointMap = Object.fromEntries((points ?? []).map((p) => [p.id, p.point_nam
     font-weight: 600;
   }
 
-  /* logout */
   .logout {
     width: 100%;
     background: #e53e3e;
   }
 
-  /* gallery */
   .gallery {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -226,7 +228,6 @@ const pointMap = Object.fromEntries((points ?? []).map((p) => [p.id, p.point_nam
     color: var(--color-text-muted);
   }
 
-  /* states */
   .hidden {
     display: none;
   }
