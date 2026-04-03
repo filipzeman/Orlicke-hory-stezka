@@ -2,82 +2,47 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 ---
 
-<BaseLayout title="Admin login">
-  <section class="container">
-    <main class="admin">
-      <h1>Přihlášení</h1>
+<BaseLayout title="Login">
+  <main class="admin">
+    <h1>Přihlášení</h1>
 
-      <form method="POST" action="/api/login" class="form">
-        <input name="email" type="email" required />
-        <input name="password" type="password" required />
+    <form id="login-form" class="form">
+      <input id="email" type="email" placeholder="Email" required />
+      <input id="password" type="password" placeholder="Heslo" required />
 
-        <button type="submit">Přihlásit</button>
-      </form>
+      <button type="submit">Přihlásit</button>
+    </form>
 
-      <p id="error" class="error"></p>
-    </main>
-  </section>
+    <p id="error" class="error"></p>
+  </main>
 
   <script type="module">
+    import { createClient } from "https://esm.sh/@supabase/supabase-js";
+
+    const supabase = createClient(
+      import.meta.env.PUBLIC_SUPABASE_URL,
+      import.meta.env.PUBLIC_SUPABASE_ANON_KEY
+    );
+
     const form = document.getElementById("login-form");
     const errorEl = document.getElementById("error");
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      errorEl.textContent = "";
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
 
-      const formData = new FormData(form);
-
-      const res = fetch("/api/login", {
-        method: "POST",
-        body: formData,
-        credentials: "same-origin",
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
       });
 
-      if (res.ok) {
-        window.location.href = "/admin/upload";
+      if (error) {
+        errorEl.textContent = error.message;
       } else {
-        const text = await res.text(); // 👈 safer
-        errorEl.textContent = text || "Chyba při přihlášení";
+        window.location.href = "/admin/upload";
       }
     });
   </script>
 </BaseLayout>
-
-<style>
-  .admin {
-    max-width: 420px;
-    margin: 0 auto;
-    padding: 24px 16px;
-  }
-
-  .form {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  input {
-    padding: 12px;
-    border-radius: 8px;
-    border: 1px solid var(--color-border);
-    font-size: 1rem;
-  }
-
-  button {
-    padding: 12px;
-    border-radius: 8px;
-    border: none;
-    background: var(--color-primary);
-    color: white;
-    font-weight: 600;
-    cursor: pointer;
-  }
-
-  .error {
-    color: #c53030;
-    font-size: 0.9rem;
-    margin-top: 8px;
-  }
-</style>

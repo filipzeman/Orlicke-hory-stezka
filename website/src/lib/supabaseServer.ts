@@ -1,8 +1,8 @@
 import { createServerClient } from "@supabase/ssr";
 
 export function createSupabaseServerClient(Astro: any) {
-  const url = import.meta.env.SUPABASE_URL;
-  const key = import.meta.env.SUPABASE_ANON_KEY;
+  const url = import.meta.env.PUBLIC_SUPABASE_URL;
+  const key = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
 
   if (!url || !key) {
     throw new Error("Missing Supabase env variables");

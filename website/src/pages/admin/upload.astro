@@ -78,6 +78,23 @@ const success = Astro.url.searchParams.get("success");
   </section>
 </BaseLayout>
 
+<script type="module">
+  import { createClient } from "https://esm.sh/@supabase/supabase-js";
+
+  const supabase = createClient(
+    import.meta.env.PUBLIC_SUPABASE_URL,
+    import.meta.env.PUBLIC_SUPABASE_ANON_KEY
+  );
+
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  if (!session) {
+    window.location.href = "/admin/login";
+  }
+</script>
+
 <style>
   .form {
     display: flex;

@@ -1,0 +1,214 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { supabase } from "../lib/supabase";
+
+// 🔹 HANDLE UPLOAD (SERVER)
+if (Astro.request.method === "POST") {
+  const formData = await Astro.request.formData();
+
+  const point_id = formData.get("point_id")?.toString();
+  const files = formData.getAll("files");
+
+  for (const file of files) {
+    if (!file || typeof file === "string") continue;
+
+    const buffer = new Uint8Array(await file.arrayBuffer());
+    const fileName = `${Date.now()}-${file.name}`;
+    const filePath = `points/${point_id}/${fileName}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from("images")
+      .upload(filePath, buffer, { contentType: file.type });
+
+    if (uploadError) {
+      console.error(uploadError);
+      continue; // skip DB insert
+    }
+
+    const { data } = supabase.storage.from("images").getPublicUrl(filePath);
+
+    await supabase.from("images").insert({
+      point_id,
+      url: data.publicUrl,
+    });
+  }
+
+  return Astro.redirect("/admin?success=1");
+}
+
+// 🔹 FETCH POINTS (for select)
+const { data: points } = await supabase.from("points").select("id, point_name").order("point_name");
+
+const success = Astro.url.searchParams.get("success");
+---
+
+<BaseLayout title="Admin">
+  <main class="admin">
+    <!-- LOGIN -->
+    <div id="login" class="card hidden">
+      <h2>Přihlášení</h2>
+
+      <input id="email" type="email" placeholder="Email" />
+      <input id="password" type="password" placeholder="Heslo" />
+
+      <button id="login-btn">Přihlásit</button>
+
+      <p id="error" class="error"></p>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div id="dashboard" class="hidden">
+      <h1>Admin</h1>
+
+      {success && <p class="success">✅ Obrázky nahrány</p>}
+
+      <!-- UPLOAD -->
+      <div class="card">
+        <h3>Nahrát obrázky</h3>
+
+        <form method="POST" enctype="multipart/form-data" class="form">
+          <select name="point_id" required>
+            <option value="">-- Vyber bod --</option>
+            {points?.map((p) => <option value={p.id}>{p.point_name}</option>)}
+          </select>
+
+          <input type="file" name="files" multiple required />
+
+          <button type="submit">Nahrát</button>
+        </form>
+      </div>
+
+      <button id="logout-btn" class="logout">Odhlásit</button>
+    </div>
+  </main>
+
+  <!-- ENV -->
+  <script>
+    declare global {
+      interface Window {
+        ENV: {
+          SUPABASE_URL: string;
+          SUPABASE_KEY: string;
+        };
+      }
+    }
+
+    window.ENV = {
+      SUPABASE_URL: import.meta.env.PUBLIC_SUPABASE_URL,
+      SUPABASE_KEY: import.meta.env.PUBLIC_SUPABASE_ANON_KEY,
+    };
+  </script>
+
+  <!-- AUTH -->
+  <script type="module">
+    import { createClient } from "https://esm.sh/@supabase/supabase-js";
+
+    const supabase = createClient(window.ENV.SUPABASE_URL, window.ENV.SUPABASE_KEY);
+
+    const loginEl = document.getElementById("login");
+    const dashboardEl = document.getElementById("dashboard");
+
+    const emailEl = document.getElementById("email");
+    const passwordEl = document.getElementById("password");
+    const loginBtn = document.getElementById("login-btn");
+    const logoutBtn = document.getElementById("logout-btn");
+    const errorEl = document.getElementById("error");
+
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    if (session) showDashboard();
+    else showLogin();
+
+    loginBtn?.addEventListener("click", async () => {
+      errorEl.textContent = "";
+
+      const { error } = await supabase.auth.signInWithPassword({
+        email: emailEl.value,
+        password: passwordEl.value,
+      });
+
+      if (error) errorEl.textContent = error.message;
+      else showDashboard();
+    });
+
+    logoutBtn?.addEventListener("click", async () => {
+      await supabase.auth.signOut();
+      showLogin();
+    });
+
+    function showLogin() {
+      loginEl.classList.remove("hidden");
+      dashboardEl.classList.add("hidden");
+    }
+
+    function showDashboard() {
+      loginEl.classList.add("hidden");
+      dashboardEl.classList.remove("hidden");
+    }
+  </script>
+</BaseLayout>
+
+<style>
+  .admin {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 16px;
+  }
+
+  /* cards */
+  .card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+
+  /* form */
+  .form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  /* inputs */
+  input,
+  select {
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid var(--color-border);
+    font-size: 1rem;
+  }
+
+  /* buttons */
+  button {
+    padding: 12px;
+    border-radius: 8px;
+    border: none;
+    background: var(--color-primary);
+    color: white;
+    font-weight: 600;
+  }
+
+  /* logout */
+  .logout {
+    width: 100%;
+    background: #e53e3e;
+  }
+
+  /* states */
+  .hidden {
+    display: none;
+  }
+
+  .error {
+    color: #c53030;
+  }
+
+  .success {
+    color: #2f855a;
+    margin-bottom: 12px;
+  }
+</style>
