@@ -1,121 +1,188 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import Icon from "../components/Icon.astro";
 ---
 
-<BaseLayout
-  title="Orlické hory - Digitální průvodce Stezkou Českem"
-  description="Interaktivní průvodce etapou Orlické hory. Mapy, itinerář, ubytování, občerstvení a všechny důležité informace pro туристy."
->
-  <!-- HERO -->
-  <section class="hero">
-    <div class="hero-content">
-      <h1>Orlické hory</h1>
-      <p>Digitální průvodce etapou Stezky Českem</p>
-      <a href="/mapa" class="cta"> Zobrazit mapu</a>
-    </div>
-  </section>
+<BaseLayout title="Stezka Orlické hory">
+  <main>
+    <!-- HERO -->
+    <section class="hero container">
+      <h1>Stezka Orlické hory</h1>
 
-  <!-- STATS -->
-  <section class="stats container">
-    <div class="stat">
-      <strong>90 km</strong>
-      <span>Délka etapy</span>
-    </div>
-    <div class="stat">
-      <strong>1115 m</strong>
-      <span>Nejvyšší bod</span>
-    </div>
-    <div class="stat">
-      <strong>150+</strong>
-      <span>Zaznamenaných bodů</span>
-    </div>
-  </section>
+      <p class="subtitle">
+        Přehled bodů, služeb a zajímavostí podél trasy. Naplánuj si přechod jednoduše a přehledně.
+      </p>
 
-  <!-- ABOUT -->
-  <section class="container">
-    <h2>O etapě</h2>
-    <p>
-      Hřeben Orlických hor nabízí dlouhé lesní úseky, daleké výhledy a horské obce s možností
-      občerstvení i noclehu. Tento web slouží jako praktický doplněk oficiální mapy — s aktuálními
-      informacemi o vodě, jídle a spaní.
-    </p>
-  </section>
+      <a href="/itinerar" class="cta"> Zobrazit itinerář</a>
+    </section>
 
-  <!-- CTA SECTION -->
-  <section class="cta-section">
-    <div class="container">
-      <h2>Plánujete přechod?</h2>
-      <p>Zobrazte si přehled bodů a služeb podél trasy.</p>
-      <a href="/itinerar" class="cta"> Otevřít itinerář</a>
-    </div>
-  </section>
+    <!-- WHAT -->
+    <section class="container section">
+      <h2>🧭 Co zde najdeš</h2>
+
+      <div class="grid">
+        <div class="item">
+          <Icon name="Mountain" size={20} />
+          <span>Body podél trasy (km přesně)</span>
+        </div>
+
+        <div class="item">
+          <Icon name="Bed" size={20} />
+          <span>Ubytování</span>
+        </div>
+
+        <div class="item">
+          <Icon name="Utensils" size={20} />
+          <span>Občerstvení</span>
+        </div>
+
+        <div class="item">
+          <Icon name="Droplet" size={20} />
+          <span>Voda</span>
+        </div>
+
+        <div class="item">
+          <Icon name="BusFront" size={20} />
+          <span>Doprava</span>
+        </div>
+
+        <div class="item">
+          <Icon name="Signpost" size={20} />
+          <span>Navigace</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- HOW -->
+    <section class="container section">
+      <h2>🥾 Jak to použít</h2>
+
+      <div class="steps">
+        <div class="step">
+          <span class="number">1</span>
+          <p>Otevři itinerář</p>
+        </div>
+
+        <div class="step">
+          <span class="number">2</span>
+          <p>Procházej body podle kilometrů</p>
+        </div>
+
+        <div class="step">
+          <span class="number">3</span>
+          <p>Filtruj (ubytování, voda…)</p>
+        </div>
+
+        <div class="step">
+          <span class="number">4</span>
+          <p>Klikni na detail bodu</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="container section center">
+      <h2>Připraven vyrazit?</h2>
+
+      <a href="/itinerar" class="cta large"> Zobrazit itinerář</a>
+    </section>
+  </main>
 </BaseLayout>
 
 <style>
+  /* HERO */
   .hero {
-    background-image:
-      linear-gradient(rgba(31, 61, 43, 0.7), rgba(31, 61, 43, 0.7)),
-      url("https://images.unsplash.com/photo-1601758064223-7fbe7f6c3e2e");
-    background-size: cover;
-    background-position: center;
-    color: white;
-    padding: 7rem 1rem;
     text-align: center;
+    padding-top: 40px;
+    padding-bottom: 40px;
   }
 
-  .hero-content {
-    max-width: 800px;
-    margin: 0 auto;
+  .hero h1 {
+    font-size: 2rem;
+    margin-bottom: 12px;
   }
 
+  .subtitle {
+    color: var(--color-text-muted);
+    margin-bottom: 20px;
+  }
+
+  /* CTA */
   .cta {
     display: inline-block;
-    margin-top: 2rem;
-    background: var(--color-accent);
-    color: white;
-    padding: 0.9rem 1.6rem;
-    text-decoration: none;
-    border-radius: 4px;
-    font-weight: 500;
-  }
-
-  .cta.secondary {
+    padding: 12px 18px;
+    border-radius: 10px;
     background: var(--color-primary);
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
   }
 
-  .stats {
+  .cta.large {
+    padding: 14px 22px;
+    font-size: 1.1rem;
+  }
+
+  /* SECTIONS */
+  .section {
+    margin-top: 32px;
+  }
+
+  /* GRID */
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 12px;
+  }
+
+  .item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 10px;
+    border-radius: 10px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+  }
+
+  /* STEPS */
+  .steps {
     display: flex;
     flex-direction: column;
-    justify-content: space-around;
-    text-align: center;
-    padding: 2rem 1rem;
-    flex-wrap: wrap;
-
-    .stat:not(:last-of-type) {
-      padding-bottom: 1rem;
-
-      @media (min-width: 768px) {
-        padding-bottom: 0;
-      }
-    }
-
-    @media (min-width: 768px) {
-      flex-direction: row;
-      justify-content: space-around;
-      padding: 3rem 1rem;
-    }
+    gap: 10px;
+    margin-top: 12px;
   }
 
-  .stat strong {
-    display: block;
-    font-size: 1.8rem;
+  .step {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    padding: 10px;
+    border-radius: 10px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
   }
 
-  .cta-section {
+  .number {
+    width: 24px;
+    height: 24px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
     background: var(--color-primary);
     color: white;
-    padding: 4rem 1rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  /* CENTER */
+  .center {
     text-align: center;
-    border: 1px solid pink;
   }
 </style>

@@ -19,4 +19,5 @@ export type IconName =
   | "LineDotRightHorizontal"
   | "ArrowRightFromLine"
   | "ArrowDownToLine"
-  | "SquareMenu";
+  | "SquareMenu"
+  | "Globe";

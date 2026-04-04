@@ -1,21 +1,38 @@
 ---
+import Icon from "../Icon.astro";
+
 const { service } = Astro.props;
 ---
 
 <div class="card">
   <div class="title">{service.point_name}</div>
 
-  {service.phone && <a href={`tel:${service.phone}`}>📞 {service.phone}</a>}
-
   {
-    service.website && (
-      <a href={service.website} target="_blank">
-        🌐 Web
+    service.phone && (
+      <a href={`tel:${service.phone}`}>
+        <Icon name="Phone" size={16} notInteractive />
+        {service.phone}
       </a>
     )
   }
 
-  {service.opening_info && <div>🕒 {service.opening_info}</div>}
+  {
+    service.website && (
+      <a href={service.website} target="_blank">
+        <Icon name="Globe" size={16} notInteractive />
+        Web
+      </a>
+    )
+  }
+
+  {
+    service.opening_info && (
+      <div>
+        <Icon name="Clock" size={16} notInteractive />
+        {service.opening_info}
+      </div>
+    )
+  }
 
   {service.note && <div class="note">{service.note}</div>}
 </div>
