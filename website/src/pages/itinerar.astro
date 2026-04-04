@@ -68,21 +68,20 @@ const filters = [
 
   <section class="container">
     <!-- <IconGuide /> -->
-    <div class="filters">
-      <div class="filters-wrapper">
-        <div class="filters">
-          {
-            filters.map((f) => (
-              <a
-                href={`/itinerar?filter=${f.key}`}
-                class={`filter ${(filter ?? "vse") === f.key ? "active" : ""}`}
-              >
-                <Icon name={f.icon || "Info"} size={16} notInteractive />
-                <span>{f.label}</span>
-              </a>
-            ))
-          }
-        </div>
+
+    <div class="filters-wrapper">
+      <div class="filters">
+        {
+          filters.map((f) => (
+            <a
+              href={`/itinerar?filter=${f.key}`}
+              class={`filter ${(filter ?? "vse") === f.key ? "active" : ""}`}
+            >
+              <Icon name={f.icon || "Info"} size={16} notInteractive />
+              <span>{f.label}</span>
+            </a>
+          ))
+        }
       </div>
     </div>
   </section>
@@ -114,6 +113,7 @@ const filters = [
   /* container */
   .filters {
     display: flex;
+    flex-wrap: wrap;
     gap: 8px;
   }
 
