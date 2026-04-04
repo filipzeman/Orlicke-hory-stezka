@@ -49,7 +49,7 @@ const lineColor =
   style={`--line-color: ${lineColor}`}
 >
   <!-- KM -->
-  <div class="km">
+  <div class=`km ${isNavigation ? "no-accent" : ""}`>
     <span>{point.km}</span>
   </div>
 
@@ -109,16 +109,15 @@ const lineColor =
     z-index: 1;
   }
 
+  .item.navigation::after {
+    width: 3px;
+    left: 3px;
+  }
+
   /* last item → no segment */
   .item.last::after {
     display: none;
   }
-
-  /* navigation mode → colored dot
-.item.navigation::before {
-  background: var(--line-color);
-  border-color: var(--line-color);
-} */
 
   /* KM */
   .km {
@@ -128,6 +127,10 @@ const lineColor =
     text-align: right;
     padding-left: 1rem;
     padding-top: 0.4rem;
+
+    &.no-accent {
+      color: var(--color-text);
+    }
   }
 
   /* CONTENT */
