@@ -53,10 +53,10 @@ These features form the functional base of the project.
 
 ### Blog
 - Markdown-based blog system
-- Articles stored in repository
-- Git-based CMS for editors
-- Editor login via GitHub
-- Image upload support
+- Articles stored in supabase database
+- DONE - Supabase-based CMS for editors
+- DONE - Editor login via GitHub
+- DONE - Image upload support
 
 Possible blog topics:
 - trail updates
