@@ -63,7 +63,7 @@ const filters = [
 <BaseLayout title="Itinerář | Orlické hory">
   <section class="container">
     <h1>Itinerář</h1>
-    <p>Přehled bodů podél trasy etapy Orlické hory.</p>
+    <p class="subtitle">Přehled bodů podél trasy etapy Orlické hory.</p>
   </section>
 
   <section class="container">
@@ -77,7 +77,7 @@ const filters = [
               href={`/itinerar?filter=${f.key}`}
               class={`filter ${(filter ?? "vse") === f.key ? "active" : ""}`}
             >
-              <Icon name={f.icon || "Info"} size={16} notInteractive />
+              {/* <Icon name={f.icon || "Info"} size={16} notInteractive /> */}
               <span>{f.label}</span>
             </a>
           ))
@@ -148,5 +148,9 @@ const filters = [
     color: white !important;
     stroke: white !important;
     background-color: var(--color-primary) !important;
+  }
+
+  .subtitle {
+    margin-bottom: 0;
   }
 </style>

@@ -43,6 +43,7 @@ const IconComponent = (LucideIcons as Record<string, any>)[name];
     border-radius: 50%;
     background: rgba(31, 61, 43, 0.08);
     color: black;
+    min-width: 42px;
 
     &.no-background {
       background: none;
@@ -51,6 +52,7 @@ const IconComponent = (LucideIcons as Record<string, any>)[name];
     &.not-interactive {
       width: 28px;
       height: 28px;
+      min-width: 28px;
     }
   }
 </style>

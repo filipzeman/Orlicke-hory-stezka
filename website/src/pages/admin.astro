@@ -230,6 +230,7 @@ const pointMap = Object.fromEntries((points ?? []).map((p) => [p.id, p.point_nam
     padding: 12px;
     border-radius: 8px;
     border: 1px solid var(--color-border);
+    font-size: 1rem;
   }
 
   button {
@@ -239,6 +240,11 @@ const pointMap = Object.fromEntries((points ?? []).map((p) => [p.id, p.point_nam
     background: var(--color-primary);
     color: white;
     font-weight: 600;
+    font-size: 1rem;
+
+    &:hover {
+      cursor: pointer;
+    }
   }
 
   .logout {
@@ -249,7 +255,7 @@ const pointMap = Object.fromEntries((points ?? []).map((p) => [p.id, p.point_nam
   .gallery {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
+    gap: 12px;
   }
 
   @media (min-width: 600px) {
@@ -266,7 +272,7 @@ const pointMap = Object.fromEntries((points ?? []).map((p) => [p.id, p.point_nam
   }
 
   .meta {
-    font-size: 0.75rem;
+    font-size: 0.8rem;
     color: var(--color-text-muted);
   }
 
