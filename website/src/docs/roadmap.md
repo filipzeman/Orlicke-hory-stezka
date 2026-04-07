@@ -13,34 +13,35 @@ Features are grouped by development phase and priority.
 These features form the functional base of the project.
 
 ### Data Infrastructure
-- Supabase database for structured trail data
-- Data model for:
+- Supabase database for structured trail data :ok:
+- Data model for: :ok:
   - points
   - services (accommodation, food, water, shop, etc.)
   - navigation segments
-- Sync from Google Sheets → Supabase
-- Server-side rendering of itinerary from Supabase
+- Sync from Google Sheets → Supabase :ok:
+- Server-side rendering of itinerary from Supabase :ok:
 
 ### Itinerary
-- Timeline-style itinerary list :unicorn: 
-- Compact mobile layout
-- Icons for service categories
-- Filters for:
+- Timeline-style itinerary list :ok: 
+- Compact mobile layout 
+- Icons for service categories :ok:
+- Filters for: :ok:
   - accommodation
-  - food
-  - water
-  - shop
+  - food & water
   - navigation points
+  - POI
+  - transport
+  - other
 
 ### Point Detail Pages
-- Detailed service information
+- Detailed service information : :zap:
 - Contact info (phone, website)
 - Notes about services
-- Nearby services (distance to next water / food / accommodation)
+- Nearby services (distance to next water / food / accommodation) 
 
 ### Navigation
-- Trail timeline with connected points
-- Navigation filter showing only navigation points
+- Trail timeline with connected points :ok:
+- Navigation filter showing only navigation points :ok:
 - Trail segment colors between navigation points :ok:
   - red
   - blue
@@ -51,12 +52,21 @@ These features form the functional base of the project.
 
 # Phase 2 – Content System
 
+### Administration
+- prepare prototype of administration UI :ok:
+- login using Supabase auth :ok:
+- logout
+
+### Image upload
+- add option to upload images to specific trail point :ok:
+- store images in Supabase bucket :ok:
+- store information about image & its relation in supabase databse :ok:
+- display recent uploaded images :ok:
+- fetch images for specific point / grouped on page load from supabase :ok:
+
 ### Blog
 - Markdown-based blog system
 - Articles stored in supabase database
-- DONE - Supabase-based CMS for editors
-- DONE - Editor login via GitHub
-- DONE - Image upload support
 
 Possible blog topics:
 - trail updates
@@ -151,11 +161,7 @@ Preferences stored via `localStorage`.
 
 # Phase 7 – Navigation Improvements
 
-### Trail Visualization
-- colored trail segments between navigation points
-- distance between navigation points
-
-### Optional Map View
+### Map View
 Simple map showing:
 - points
 - services
