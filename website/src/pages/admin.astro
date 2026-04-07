@@ -7,7 +7,7 @@ import Icon from "../components/Icon.astro";
 
 const supabase = getSupabase();
 
-const { data: points } = await supabase.from("points").select("id, point_name").order("point_name");
+const { data: points } = await supabase.from("points").select("id, point_name").order("km");
 
 const { data: images } = await supabase
   .from("images")
@@ -68,7 +68,7 @@ const pointMap = Object.fromEntries((points ?? []).map((p) => [p.id, p.point_nam
 
         <!-- GALLERY -->
         <div class="card">
-          <h3>Nahrané obrázky</h3>
+          {images && !!images.length ? <h3>Naposledy nahrané obrázky</h3> : <h3>Žádné obrázky</h3>}
 
           <div class="gallery">
             {
@@ -238,12 +238,12 @@ const pointMap = Object.fromEntries((points ?? []).map((p) => [p.id, p.point_nam
   }
 
   .dashboard-section {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: 1fr;
     gap: 24px;
 
     @media (min-width: 720px) {
-      flex-direction: row;
+      grid-template-columns: 1fr 1fr;
     }
   }
 
@@ -289,6 +289,10 @@ const pointMap = Object.fromEntries((points ?? []).map((p) => [p.id, p.point_nam
   .logout {
     width: 100%;
     background: #e53e3e;
+
+    @media (min-width: 720px) {
+      width: fit-content;
+    }
   }
 
   .gallery {
@@ -332,15 +336,17 @@ const pointMap = Object.fromEntries((points ?? []).map((p) => [p.id, p.point_nam
   /* 🔥 TOAST */
   .toast {
     position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
+    top: 20px;
+    /* left: 50%;
+    transform: translateX(-50%); */
+    left: 0;
     background: var(--color-primary);
     color: white;
     padding: 10px 16px;
     border-radius: 8px;
     font-size: 0.9rem;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
   }
 
   .file-upload {

@@ -35,11 +35,11 @@ async function sync() {
 
     const point = {
       id: row[0],
-      location_id: row[1],
-      location_name: row[2],
-      km: parseFloat(row[3]),
+      location_id: row[2],
+      location_name: row[3],
+      km: parseFloat(row[4]),
 
-      point_name: row[4],
+      point_name: row[1],
       crossroad_number: row[5],
       category: row[6],
       type: row[7],

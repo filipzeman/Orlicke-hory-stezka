@@ -48,7 +48,7 @@ export type PointCategory =
   | "turisticke_cile"
   | "ostatni";
 
-export type RouteMarking = "cervena" | "modra" | "zelena" | "zluta";
+export type RouteMarking = "cervena" | "modra" | "zelena" | "zluta" | "-";
 
 export type AccomodationTypes =
   | "hotel"
@@ -74,8 +74,15 @@ export type NavigationTypes =
   | "nouzovy bod"
   | "uzavirka"
   | "turisticky_pristresek"
-  | "vrchol";
-export type TransportTypes = "vlakova_zastavka" | "autobusova_zastavka" | "prevoz" | "parkoviste";
+  | "vrchol"
+  | "hranicni_prechod";
+
+export type TransportTypes =
+  | "vlakova_zastavka"
+  | "autobusova_zastavka"
+  | "prevoz"
+  | "parkoviste"
+  | "nabijeci_stanice";
 export type TuristicGoalTypes =
   | "kostel"
   | "chapel"
@@ -84,5 +91,7 @@ export type TuristicGoalTypes =
   | "vyhlidka"
   | "pamatny_strom"
   | "turisticke_informacni_centrum"
+  | "muzeum"
+  | "kriz"
   | "ostatni";
 export type OtherServiceTypes = "razitko" | "zasilkovna" | "bankomat";

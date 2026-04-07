@@ -22,7 +22,7 @@ These features form the functional base of the project.
 - Server-side rendering of itinerary from Supabase
 
 ### Itinerary
-- Timeline-style itinerary list
+- Timeline-style itinerary list :unicorn: 
 - Compact mobile layout
 - Icons for service categories
 - Filters for:
@@ -41,7 +41,7 @@ These features form the functional base of the project.
 ### Navigation
 - Trail timeline with connected points
 - Navigation filter showing only navigation points
-- Trail segment colors between navigation points
+- Trail segment colors between navigation points :ok:
   - red
   - blue
   - green

@@ -34,7 +34,7 @@ const sortedPoints = points
   }))
   .sort((a, b) => a.km - b.km);
 
-const filter = Astro.url.searchParams.get("filter");
+const filter = Astro.url.searchParams.get("filtr");
 
 console.log("ENV URL:", import.meta.env.PUBLIC_SUPABASE_URL);
 
@@ -74,7 +74,7 @@ const filters = [
         {
           filters.map((f) => (
             <a
-              href={`/itinerar?filter=${f.key}`}
+              href={`/itinerar?filtr=${f.key}`}
               class={`filter ${(filter ?? "vse") === f.key ? "active" : ""}`}
             >
               {/* <Icon name={f.icon || "Info"} size={16} notInteractive /> */}
