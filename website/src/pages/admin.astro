@@ -262,6 +262,11 @@ const pointMap = Object.fromEntries((points ?? []).map((p) => [p.id, p.point_nam
     display: flex;
     flex-direction: column;
     gap: 10px;
+    width: 100%;
+  }
+
+  .form > * {
+    min-width: 0;
   }
 
   input,
@@ -297,18 +302,18 @@ const pointMap = Object.fromEntries((points ?? []).map((p) => [p.id, p.point_nam
 
   .gallery {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 12px;
-  }
 
-  @media (min-width: 720px) {
-    .gallery {
+    @media (min-width: 500px) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    @media (min-width: 720px) {
       grid-template-columns: repeat(2, 1fr);
     }
-  }
 
-  @media (min-width: 920px) {
-    .gallery {
+    @media (min-width: 920px) {
       grid-template-columns: repeat(3, 1fr);
     }
   }
@@ -349,6 +354,11 @@ const pointMap = Object.fromEntries((points ?? []).map((p) => [p.id, p.point_nam
     z-index: 1000;
   }
 
+  select {
+    width: 100%;
+    max-width: 100%;
+  }
+
   .file-upload {
     display: flex;
     flex-direction: column;
@@ -379,6 +389,10 @@ const pointMap = Object.fromEntries((points ?? []).map((p) => [p.id, p.point_nam
 
     @media (min-width: 720px) {
       justify-content: flex-start;
+    }
+
+    .icon svg {
+      stroke: var(--color-text);
     }
   }
 

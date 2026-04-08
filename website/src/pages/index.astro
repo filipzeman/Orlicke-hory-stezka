@@ -6,19 +6,23 @@ import Icon from "../components/Icon.astro";
 <BaseLayout title="Stezka Orlické hory">
   <main>
     <!-- HERO -->
-    <section class="hero container">
-      <h1>Stezka Orlické hory</h1>
+    <section class="hero">
+      <div class="hero-bg"></div>
 
-      <p class="subtitle">
-        Přehled bodů, služeb a zajímavostí podél trasy. Naplánuj si přechod jednoduše a přehledně.
-      </p>
+      <div class="hero-content container">
+        <h1>Stezka Orlické hory</h1>
 
-      <a href="/itinerar" class="cta"> Zobrazit itinerář</a>
+        <p class="subtitle">
+          Přehled bodů, služeb a zajímavostí podél trasy. Naplánuj si přechod jednoduše a přehledně.
+        </p>
+
+        <a href="/itinerar" class="cta"> Zobrazit itinerář</a>
+      </div>
     </section>
 
     <!-- WHAT -->
     <section class="container section">
-      <h2>🧭 Co zde najdeš</h2>
+      <h2><Icon name="Map" size={20} noBackground /> Co zde najdeš</h2>
 
       <div class="grid">
         <div class="item">
@@ -55,7 +59,7 @@ import Icon from "../components/Icon.astro";
 
     <!-- HOW -->
     <section class="container section">
-      <h2>🥾 Jak to použít</h2>
+      <h2><Icon name="Route" size={20} noBackground /> Jak to použít</h2>
 
       <div class="steps">
         <div class="step">
@@ -90,37 +94,92 @@ import Icon from "../components/Icon.astro";
 </BaseLayout>
 
 <style>
-  /* HERO */
   .hero {
-    text-align: center;
-    padding-top: 40px;
-    padding-bottom: 40px;
+    position: relative;
+    height: 60vh;
+    min-height: 420px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    overflow: hidden;
   }
 
+  /* background image */
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+
+    background-image: url("/images/hero.jpg");
+    background-size: cover;
+    background-position: center;
+    animation: zoom 20s ease-in-out infinite alternate;
+
+    z-index: 1;
+  }
+
+  /* overlay */
+  .hero-bg::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.55));
+  }
+
+  @keyframes zoom {
+    from {
+      transform: scale(1);
+    }
+    to {
+      transform: scale(1.05);
+    }
+  }
+
+  /* content */
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    color: white;
+
+    max-width: 600px;
+  }
+
+  /* typography */
   .hero h1 {
-    font-size: 2rem;
+    font-size: 2.3rem;
     margin-bottom: 12px;
   }
 
   .subtitle {
-    color: var(--color-text-muted);
     margin-bottom: 20px;
+    opacity: 0.9;
   }
 
   /* CTA */
   .cta {
     display: inline-block;
     padding: 12px 18px;
+
     border-radius: 10px;
     background: var(--color-primary);
+
     color: white;
     text-decoration: none;
     font-weight: 600;
   }
 
-  .cta.large {
-    padding: 14px 22px;
-    font-size: 1.1rem;
+  /* mobile tweak */
+  @media (max-width: 600px) {
+    .hero {
+      height: 55vh;
+    }
+
+    .hero h1 {
+      font-size: 1.8rem;
+    }
   }
 
   /* SECTIONS */
