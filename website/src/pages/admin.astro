@@ -19,391 +19,400 @@ const pointMap = Object.fromEntries((points ?? []).map((p) => [p.id, p.point_nam
 ---
 
 <BaseLayout title="Admin">
-  <main class="admin">
-    <!-- LOGIN -->
-    <div id="login" class="card hidden">
-      <h2>Přihlášení</h2>
+  <section class="container">
+    <main class="admin">
+      <!-- LOGIN -->
+      <section class="container">
+        <h1>Administrace</h1>
 
-      <input id="email" type="email" placeholder="Email" />
-      <input id="password" type="password" placeholder="Heslo" />
+        <div id="login" class="card hidden">
+          <h2>Přihlášení</h2>
 
-      <button id="login-btn">Přihlásit</button>
-      <p id="error" class="error"></p>
-    </div>
+          <input id="email" type="email" placeholder="Email" />
+          <input id="password" type="password" placeholder="Heslo" />
 
-    <!-- DASHBOARD -->
-    <div id="dashboard" class="hidden">
-      <h1>Admin</h1>
+          <button id="login-btn">Přihlásit</button>
+          <p id="error" class="error"></p>
+        </div>
 
-      <div class="dashboard-section">
-        <!-- UPLOAD -->
-        <div class="card">
-          <h3>Nahrát obrázky</h3>
+        <!-- DASHBOARD -->
+        <div id="dashboard" class="hidden">
+          <div class="dashboard-section">
+            <!-- UPLOAD -->
+            <div class="card">
+              <h3>Nahrát obrázky</h3>
 
-          <form id="upload-form" class="form">
-            <select name="point_id" required>
-              <option value="">-- Vyber bod --</option>
-              {points?.map((p) => <option value={p.id}>{p.point_name}</option>)}
-            </select>
+              <form id="upload-form" class="form">
+                <select name="point_id" required>
+                  <option value="">-- Vyber bod --</option>
+                  {points?.map((p) => <option value={p.id}>{p.point_name}</option>)}
+                </select>
 
-            <div class="file-upload">
-              <label for="file-input" class="file-label">
-                <Icon name="Upload" size={18} />
-                <span id="file-text">Vybrat obrázky</span>
-              </label>
+                <div class="file-upload">
+                  <label for="file-input" class="file-label">
+                    <Icon name="Upload" size={18} />
+                    <span id="file-text">Vybrat obrázky</span>
+                  </label>
 
-              <input
-                id="file-input"
-                type="file"
-                name="files"
-                multiple
-                accept="image/jpeg,image/png,image/webp"
-                required
-              />
+                  <input
+                    id="file-input"
+                    type="file"
+                    name="files"
+                    multiple
+                    accept="image/jpeg,image/png,image/webp"
+                    required
+                  />
+                </div>
+
+                <button type="submit">Nahrát</button>
+              </form>
             </div>
 
-            <button type="submit">Nahrát</button>
-          </form>
-        </div>
+            <!-- GALLERY -->
+            <div class="card">
+              {
+                images && !!images.length ? (
+                  <h3>Naposledy nahrané obrázky</h3>
+                ) : (
+                  <h3>Žádné obrázky</h3>
+                )
+              }
 
-        <!-- GALLERY -->
-        <div class="card">
-          {images && !!images.length ? <h3>Naposledy nahrané obrázky</h3> : <h3>Žádné obrázky</h3>}
-
-          <div class="gallery">
-            {
-              images?.map((img) => (
-                <div class="image-item">
-                  <img src={img.url} loading="lazy" />
-                  <div class="meta">{pointMap[img.point_id] || "Neznámý bod"}</div>
-                </div>
-              ))
-            }
+              <div class="gallery">
+                {
+                  images?.map((img) => (
+                    <div class="image-item">
+                      <img src={img.url} loading="lazy" />
+                      <div class="meta">{pointMap[img.point_id] || "Neznámý bod"}</div>
+                    </div>
+                  ))
+                }
+              </div>
+            </div>
           </div>
+
+          <button id="logout-btn" class="logout">Odhlásit</button>
         </div>
-      </div>
+      </section>
+    </main>
 
-      <button id="logout-btn" class="logout">Odhlásit</button>
-    </div>
-  </main>
+    <!-- ENV -->
+    <script>
+      window.ENV = {
+        SUPABASE_URL: import.meta.env.PUBLIC_SUPABASE_URL,
+        SUPABASE_KEY: import.meta.env.PUBLIC_SUPABASE_ANON_KEY,
+      };
+    </script>
 
-  <!-- ENV -->
-  <script>
-    window.ENV = {
-      SUPABASE_URL: import.meta.env.PUBLIC_SUPABASE_URL,
-      SUPABASE_KEY: import.meta.env.PUBLIC_SUPABASE_ANON_KEY,
-    };
-  </script>
+    <!-- CLIENT -->
+    <script type="module">
+      import { createClient } from "https://esm.sh/@supabase/supabase-js";
 
-  <!-- CLIENT -->
-  <script type="module">
-    import { createClient } from "https://esm.sh/@supabase/supabase-js";
+      document.addEventListener("DOMContentLoaded", async () => {
+        const supabase = createClient(window.ENV.SUPABASE_URL, window.ENV.SUPABASE_KEY);
 
-    document.addEventListener("DOMContentLoaded", async () => {
-      const supabase = createClient(window.ENV.SUPABASE_URL, window.ENV.SUPABASE_KEY);
+        const loginEl = document.getElementById("login");
+        const dashboardEl = document.getElementById("dashboard");
 
-      const loginEl = document.getElementById("login");
-      const dashboardEl = document.getElementById("dashboard");
+        const emailEl = document.getElementById("email");
+        const passwordEl = document.getElementById("password");
+        const loginBtn = document.getElementById("login-btn");
+        const logoutBtn = document.getElementById("logout-btn");
+        const errorEl = document.getElementById("error");
 
-      const emailEl = document.getElementById("email");
-      const passwordEl = document.getElementById("password");
-      const loginBtn = document.getElementById("login-btn");
-      const logoutBtn = document.getElementById("logout-btn");
-      const errorEl = document.getElementById("error");
+        const form = document.getElementById("upload-form");
 
-      const form = document.getElementById("upload-form");
+        // 🔹 session
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
 
-      // 🔹 session
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
+        if (session) showDashboard();
+        else showLogin();
 
-      if (session) showDashboard();
-      else showLogin();
+        // 🔹 login
+        loginBtn?.addEventListener("click", async () => {
+          errorEl.textContent = "";
 
-      // 🔹 login
-      loginBtn?.addEventListener("click", async () => {
-        errorEl.textContent = "";
+          const { error } = await supabase.auth.signInWithPassword({
+            email: emailEl.value,
+            password: passwordEl.value,
+          });
 
-        const { error } = await supabase.auth.signInWithPassword({
-          email: emailEl.value,
-          password: passwordEl.value,
+          if (error) errorEl.textContent = error.message;
+          else showDashboard();
         });
 
-        if (error) errorEl.textContent = error.message;
-        else showDashboard();
-      });
-
-      // 🔹 logout
-      logoutBtn?.addEventListener("click", async () => {
-        await supabase.auth.signOut();
-        showLogin();
-      });
-
-      // 🔥 upload
-      if (form) {
-        form.addEventListener("submit", async (e) => {
-          e.preventDefault();
-
-          const formData = new FormData(form);
-          const files = formData.getAll("files");
-          const point_id = formData.get("point_id");
-
-          try {
-            await Promise.all(
-              files.map(async (file) => {
-                if (!file || typeof file === "string") return;
-
-                const filePath = `points/${point_id}/${Date.now()}-${file.name}`;
-
-                const { error: uploadError } = await supabase.storage
-                  .from("images")
-                  .upload(filePath, file);
-
-                if (uploadError) throw uploadError;
-
-                const { data } = supabase.storage.from("images").getPublicUrl(filePath);
-
-                const { error: dbError } = await supabase.from("images").insert({
-                  point_id,
-                  url: data.publicUrl,
-                });
-
-                if (dbError) throw dbError;
-              })
-            );
-
-            // ✅ ONLY runs after ALL uploads finish
-            showToast("✅ Obrázky nahrány");
-
-            form.reset();
-
-            const fileInput = form.querySelector('input[type="file"]');
-            if (fileInput) fileInput.value = "";
-          } catch (err) {
-            console.error(err);
-            showToast("❌ Upload selhal");
-          }
+        // 🔹 logout
+        logoutBtn?.addEventListener("click", async () => {
+          await supabase.auth.signOut();
+          showLogin();
         });
-      }
 
-      function showLogin() {
-        loginEl.classList.remove("hidden");
-        dashboardEl.classList.add("hidden");
-      }
+        // 🔥 upload
+        if (form) {
+          form.addEventListener("submit", async (e) => {
+            e.preventDefault();
 
-      function showDashboard() {
-        loginEl.classList.add("hidden");
-        dashboardEl.classList.remove("hidden");
-      }
+            const formData = new FormData(form);
+            const files = formData.getAll("files");
+            const point_id = formData.get("point_id");
 
-      // 🔥 TOAST
-      function showToast(message) {
-        const toast = document.createElement("div");
-        toast.textContent = message;
-        toast.className = "toast";
-        document.body.appendChild(toast);
+            try {
+              await Promise.all(
+                files.map(async (file) => {
+                  if (!file || typeof file === "string") return;
 
-        setTimeout(() => {
-          toast.remove();
-        }, 3000);
-      }
-    });
+                  const filePath = `points/${point_id}/${Date.now()}-${file.name}`;
 
-    const fileInput = document.getElementById("file-input");
-    const fileText = document.getElementById("file-text");
+                  const { error: uploadError } = await supabase.storage
+                    .from("images")
+                    .upload(filePath, file);
 
-    fileInput?.addEventListener("change", () => {
-      const files = fileInput.files;
+                  if (uploadError) throw uploadError;
 
-      if (!files || files.length === 0) {
-        fileText.textContent = "Vybrat obrázky";
-        return;
-      }
+                  const { data } = supabase.storage.from("images").getPublicUrl(filePath);
 
-      if (files.length === 1) {
-        fileText.textContent = files[0].name;
-      } else {
-        fileText.textContent = `${files.length} souborů vybráno`;
-      }
-    });
-  </script>
-</BaseLayout>
+                  const { error: dbError } = await supabase.from("images").insert({
+                    point_id,
+                    url: data.publicUrl,
+                  });
 
-<style>
-  .admin {
-    /* max-width: 500px; */
-    margin: 0 auto;
-    padding: 16px;
-  }
+                  if (dbError) throw dbError;
+                })
+              );
 
-  .dashboard-section {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 24px;
+              // ✅ ONLY runs after ALL uploads finish
+              showToast("✅ Obrázky nahrány");
 
-    @media (min-width: 720px) {
-      grid-template-columns: 1fr 1fr;
-    }
-  }
+              form.reset();
 
-  .card {
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: 12px;
-    padding: 16px;
-    margin-bottom: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
+              const fileInput = form.querySelector('input[type="file"]');
+              if (fileInput) fileInput.value = "";
+            } catch (err) {
+              console.error(err);
+              showToast("❌ Upload selhal");
+            }
+          });
+        }
 
-  .form {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    width: 100%;
-  }
+        function showLogin() {
+          loginEl.classList.remove("hidden");
+          dashboardEl.classList.add("hidden");
+        }
 
-  .form > * {
-    min-width: 0;
-  }
+        function showDashboard() {
+          loginEl.classList.add("hidden");
+          dashboardEl.classList.remove("hidden");
+        }
 
-  input,
-  select {
-    padding: 12px;
-    border-radius: 8px;
-    border: 1px solid var(--color-border);
-    font-size: 1rem;
-  }
+        // 🔥 TOAST
+        function showToast(message) {
+          const toast = document.createElement("div");
+          toast.textContent = message;
+          toast.className = "toast";
+          document.body.appendChild(toast);
 
-  button {
-    padding: 12px;
-    border-radius: 8px;
-    border: none;
-    background: var(--color-primary);
-    color: white;
-    font-weight: 600;
-    font-size: 1rem;
+          setTimeout(() => {
+            toast.remove();
+          }, 3000);
+        }
+      });
 
-    &:hover {
-      cursor: pointer;
-    }
-  }
+      const fileInput = document.getElementById("file-input");
+      const fileText = document.getElementById("file-text");
 
-  .logout {
-    width: 100%;
-    background: #e53e3e;
+      fileInput?.addEventListener("change", () => {
+        const files = fileInput.files;
 
-    @media (min-width: 720px) {
-      width: fit-content;
-    }
-  }
+        if (!files || files.length === 0) {
+          fileText.textContent = "Vybrat obrázky";
+          return;
+        }
 
-  .gallery {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
+        if (files.length === 1) {
+          fileText.textContent = files[0].name;
+        } else {
+          fileText.textContent = `${files.length} souborů vybráno`;
+        }
+      });
+    </script>
+  </section>
 
-    @media (min-width: 500px) {
-      grid-template-columns: repeat(3, 1fr);
+  <style>
+    .admin {
+      /* max-width: 500px; */
+      margin: 0 auto;
     }
 
-    @media (min-width: 720px) {
+    .dashboard-section {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+
+      @media (min-width: 720px) {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+    }
+
+    .form > * {
+      min-width: 0;
+    }
+
+    input,
+    select {
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid var(--color-border);
+      font-size: 1rem;
+    }
+
+    button {
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      background: var(--color-primary);
+      color: white;
+      font-weight: 600;
+      font-size: 1rem;
+
+      &:hover {
+        cursor: pointer;
+      }
+    }
+
+    .logout {
+      width: 100%;
+      background: #e53e3e;
+
+      @media (min-width: 720px) {
+        width: fit-content;
+      }
+    }
+
+    .gallery {
+      display: grid;
       grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+
+      @media (min-width: 500px) {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      @media (min-width: 720px) {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      @media (min-width: 920px) {
+        grid-template-columns: repeat(3, 1fr);
+      }
     }
 
-    @media (min-width: 920px) {
-      grid-template-columns: repeat(3, 1fr);
+    .image-item img {
+      width: 100%;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 8px;
     }
-  }
 
-  .image-item img {
-    width: 100%;
-    height: 120px;
-    object-fit: cover;
-    border-radius: 8px;
-  }
+    .meta {
+      font-size: 0.8rem;
+      color: var(--color-text-muted);
+    }
 
-  .meta {
-    font-size: 0.8rem;
-    color: var(--color-text-muted);
-  }
+    .hidden {
+      display: none;
+    }
 
-  .hidden {
-    display: none;
-  }
+    .error {
+      color: #c53030;
+    }
 
-  .error {
-    color: #c53030;
-  }
-
-  /* 🔥 TOAST */
-  .toast {
-    position: fixed;
-    top: 20px;
-    /* left: 50%;
+    /* 🔥 TOAST */
+    .toast {
+      position: fixed;
+      top: 20px;
+      /* left: 50%;
     transform: translateX(-50%); */
-    left: 0;
-    background: var(--color-primary);
-    color: white;
-    padding: 10px 16px;
-    border-radius: 8px;
-    font-size: 0.9rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    z-index: 1000;
-  }
-
-  select {
-    width: 100%;
-    max-width: 100%;
-  }
-
-  .file-upload {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  /* hide native */
-  .file-upload input {
-    display: none;
-  }
-
-  /* custom button */
-  .file-label {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-
-    padding: 12px;
-    border-radius: 10px;
-
-    border: 1px dashed var(--color-border);
-    background: var(--color-surface);
-
-    font-size: 0.95rem;
-    cursor: pointer;
-    text-align: center;
-
-    @media (min-width: 720px) {
-      justify-content: flex-start;
+      left: 0;
+      background: var(--color-primary);
+      color: white;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      z-index: 1000;
     }
 
-    .icon svg {
-      stroke: var(--color-text);
+    select {
+      width: 100%;
+      max-width: 100%;
     }
-  }
 
-  /* hover */
-  .file-label:hover {
-    border-color: var(--color-primary);
-  }
+    .file-upload {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
 
-  /* selected text */
-  .file-text-selected {
-    font-size: 0.8rem;
-    color: var(--color-text-muted);
-  }
-</style>
+    /* hide native */
+    .file-upload input {
+      display: none;
+    }
+
+    /* custom button */
+    .file-label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+
+      padding: 12px;
+      border-radius: 10px;
+
+      border: 1px dashed var(--color-border);
+      background: var(--color-surface);
+
+      font-size: 0.95rem;
+      cursor: pointer;
+      text-align: center;
+
+      @media (min-width: 720px) {
+        justify-content: flex-start;
+      }
+
+      .icon svg {
+        stroke: var(--color-text);
+      }
+    }
+
+    /* hover */
+    .file-label:hover {
+      border-color: var(--color-primary);
+    }
+
+    /* selected text */
+    .file-text-selected {
+      font-size: 0.8rem;
+      color: var(--color-text-muted);
+    }
+  </style>
+</BaseLayout>

@@ -12,76 +12,84 @@ import Icon from "../components/Icon.astro";
       <div class="hero-content container">
         <h1>Stezka Orlické hory</h1>
 
-        <p class="subtitle">
-          Přehled bodů, služeb a zajímavostí podél trasy. Naplánuj si přechod jednoduše a přehledně.
-        </p>
+        <p class="subtitle">Naplánuj si přechod podle reálných bodů na trase.</p>
 
         <a href="/itinerar" class="cta"> Zobrazit itinerář</a>
       </div>
     </section>
 
-    <!-- WHAT -->
+    <!-- USE CASES -->
     <section class="container section">
-      <h2><Icon name="Map" size={20} noBackground /> Co zde najdeš</h2>
+      <h2 class="section-title">
+        <Icon name="Map" size={20} />
+        K čemu to využiješ
+      </h2>
 
-      <div class="grid">
-        <div class="item">
-          <Icon name="Mountain" size={20} />
-          <span>Body podél trasy (km)</span>
+      <div class="use-cases">
+        <div class="use-case">
+          <div class="use-case-title">
+            <Icon name="Bed" size={18} />
+            <span>Plánování etapy</span>
+          </div>
+          <p>Kde přespat, kde doplnit vodu nebo se najíst.</p>
         </div>
 
-        <div class="item">
-          <Icon name="Bed" size={20} />
-          <span>Ubytování</span>
+        <div class="use-case">
+          <div class="use-case-title">
+            <Icon name="Route" size={18} />
+            <span>Rozhodování na trase</span>
+          </div>
+          <p>Co je za 5 nebo 10 km bez hledání v mapách.</p>
         </div>
 
-        <div class="item">
-          <Icon name="Utensils" size={20} />
-          <span>Občerstvení</span>
+        <div class="use-case">
+          <div class="use-case-title">
+            <Icon name="Droplet" size={18} />
+            <span>Rychlá orientace</span>
+          </div>
+          <p>Voda, jídlo nebo doprava během pár sekund.</p>
         </div>
 
-        <div class="item">
-          <Icon name="Droplet" size={20} />
-          <span>Voda</span>
-        </div>
-
-        <div class="item">
-          <Icon name="BusFront" size={20} />
-          <span>Doprava</span>
-        </div>
-
-        <div class="item">
-          <Icon name="Signpost" size={20} />
-          <span>Navigace</span>
+        <div class="use-case">
+          <div class="use-case-title">
+            <Icon name="MapPin" size={18} />
+            <span>Přehled trasy</span>
+          </div>
+          <p>Všechny body seřazené podle kilometrů.</p>
         </div>
       </div>
     </section>
 
-    <!-- HOW -->
+    <!-- HOW IT WORKS -->
     <section class="container section">
-      <h2><Icon name="Route" size={20} noBackground /> Jak to použít</h2>
+      <h2 class="section-title">
+        <Icon name="Navigation" size={20} />
+        Jak to funguje
+      </h2>
 
       <div class="steps">
         <div class="step">
           <span class="number">1</span>
-          <p>Otevři itinerář</p>
+          <p>Otevřeš itinerář</p>
         </div>
 
         <div class="step">
           <span class="number">2</span>
-          <p>Procházej body podle kilometrů</p>
+          <p>Vidíš body podle kilometrů</p>
         </div>
 
         <div class="step">
           <span class="number">3</span>
-          <p>Filtruj (ubytování, voda…)</p>
+          <p>Filtruješ podle potřeby</p>
         </div>
 
         <div class="step">
           <span class="number">4</span>
-          <p>Klikni na detail bodu</p>
+          <p>Klikneš na detail bodu</p>
         </div>
       </div>
+
+      <p class="result">→ máš jasno během pár sekund</p>
     </section>
 
     <!-- CTA -->
@@ -94,62 +102,42 @@ import Icon from "../components/Icon.astro";
 </BaseLayout>
 
 <style>
+  /* HERO */
   .hero {
     position: relative;
-    height: 50vh;
+    height: 60vh;
     min-height: 420px;
-
     display: flex;
     align-items: center;
     justify-content: center;
-
     overflow: hidden;
   }
 
-  /* background image */
   .hero-bg {
     position: absolute;
     inset: 0;
-
     background-image: url("/images/hero.jpg");
     background-size: cover;
     background-position: center;
-    animation: zoom 20s ease-in-out infinite alternate;
-
-    z-index: 1;
   }
 
-  /* overlay */
   .hero-bg::after {
     content: "";
     position: absolute;
     inset: 0;
-
     background: linear-gradient(to bottom, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.55));
   }
 
-  @keyframes zoom {
-    from {
-      transform: scale(1);
-    }
-    to {
-      transform: scale(1.05);
-    }
-  }
-
-  /* content */
   .hero-content {
     position: relative;
     z-index: 2;
     text-align: center;
     color: white;
-
     max-width: 600px;
   }
 
-  /* typography */
   .hero h1 {
-    font-size: 2.3rem;
+    font-size: 2.2rem;
     margin-bottom: 12px;
   }
 
@@ -162,48 +150,59 @@ import Icon from "../components/Icon.astro";
   .cta {
     display: inline-block;
     padding: 12px 18px;
-
     border-radius: 10px;
     background: var(--color-primary);
-
     color: white;
     text-decoration: none;
     font-weight: 600;
   }
 
-  /* mobile tweak */
-  @media (max-width: 600px) {
-    .hero {
-      height: 50vh;
-    }
-
-    .hero h1 {
-      font-size: 1.8rem;
-    }
+  .cta.large {
+    padding: 14px 22px;
+    font-size: 1.1rem;
   }
 
   /* SECTIONS */
   .section {
-    margin-top: 24px;
+    margin-top: 48px;
   }
 
-  /* GRID */
-  .grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-top: 12px;
-  }
-
-  .item {
+  /* SECTION TITLE */
+  .section-title {
     display: flex;
     align-items: center;
     gap: 8px;
+    margin-bottom: 16px;
+  }
 
-    padding: 10px;
+  .section-title svg {
+    color: var(--color-primary);
+  }
+
+  /* USE CASES */
+  .use-cases {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .use-case {
+    padding: 12px;
     border-radius: 10px;
     background: var(--color-surface);
-    border: 1px solid var(--color-border);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+  }
+
+  .use-case-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+  }
+
+  .use-case p {
+    margin: 4px 0 0;
+    color: var(--color-text-muted);
   }
 
   /* STEPS */
@@ -218,21 +217,22 @@ import Icon from "../components/Icon.astro";
     display: flex;
     align-items: center;
     gap: 10px;
-
-    padding: 10px;
+    padding: 12px;
     border-radius: 10px;
     background: var(--color-surface);
-    border: 1px solid var(--color-border);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+
+    & > p {
+      margin: 0;
+    }
   }
 
   .number {
     width: 24px;
     height: 24px;
-
     display: flex;
     align-items: center;
     justify-content: center;
-
     border-radius: 50%;
     background: var(--color-primary);
     color: white;
@@ -240,8 +240,25 @@ import Icon from "../components/Icon.astro";
     font-weight: 600;
   }
 
+  .result {
+    margin-top: 12px;
+    font-weight: 500;
+    color: var(--color-text-muted);
+  }
+
   /* CENTER */
   .center {
     text-align: center;
+  }
+
+  /* MOBILE */
+  @media (max-width: 600px) {
+    .hero {
+      height: 50vh;
+    }
+
+    .hero h1 {
+      font-size: 1.8rem;
+    }
   }
 </style>
