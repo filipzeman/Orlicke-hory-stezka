@@ -21,17 +21,17 @@ const pointMap = Object.fromEntries((points ?? []).map((p) => [p.id, p.point_nam
 <BaseLayout title="Admin">
   <section class="container">
     <main class="admin">
-      <!-- LOGIN -->
       <section class="container">
         <h1>Administrace</h1>
 
+        <!-- LOGIN -->
         <div id="login" class="card hidden">
           <h2>Přihlášení</h2>
 
           <input id="email" type="email" placeholder="Email" />
           <input id="password" type="password" placeholder="Heslo" />
 
-          <button id="login-btn">Přihlásit</button>
+          <button id="login-btn" class="btn btn-primary">Přihlásit</button>
           <p id="error" class="error"></p>
         </div>
 
@@ -57,26 +57,21 @@ const pointMap = Object.fromEntries((points ?? []).map((p) => [p.id, p.point_nam
                   <input
                     id="file-input"
                     type="file"
-                    name="files"
                     multiple
                     accept="image/jpeg,image/png,image/webp"
-                    required
                   />
+
+                  <div id="file-info" class="file-info"></div>
+                  <div id="preview" class="preview"></div>
                 </div>
 
-                <button type="submit">Nahrát</button>
+                <button type="submit" class="btn btn-primary">Nahrát</button>
               </form>
             </div>
 
             <!-- GALLERY -->
             <div class="card">
-              {
-                images && !!images.length ? (
-                  <h3>Naposledy nahrané obrázky</h3>
-                ) : (
-                  <h3>Žádné obrázky</h3>
-                )
-              }
+              <h3>{images?.length ? "Naposledy nahrané obrázky" : "Žádné obrázky"}</h3>
 
               <div class="gallery">
                 {
@@ -91,7 +86,7 @@ const pointMap = Object.fromEntries((points ?? []).map((p) => [p.id, p.point_nam
             </div>
           </div>
 
-          <button id="logout-btn" class="logout">Odhlásit</button>
+          <button id="logout-btn" class="btn btn-danger btn-block logout"> Odhlásit</button>
         </div>
       </section>
     </main>
@@ -122,15 +117,22 @@ const pointMap = Object.fromEntries((points ?? []).map((p) => [p.id, p.point_nam
 
         const form = document.getElementById("upload-form");
 
-        // 🔹 session
+        const fileInput = document.getElementById("file-input");
+        const fileText = document.getElementById("file-text");
+        const previewContainer = document.getElementById("preview");
+        const fileInfo = document.getElementById("file-info");
+
+        /** @type {File[]} */
+        let compressedFiles = [];
+
+        // 🔹 SESSION
         const {
           data: { session },
         } = await supabase.auth.getSession();
 
-        if (session) showDashboard();
-        else showLogin();
+        session ? showDashboard() : showLogin();
 
-        // 🔹 login
+        // 🔹 LOGIN
         loginBtn?.addEventListener("click", async () => {
           errorEl.textContent = "";
 
@@ -143,58 +145,128 @@ const pointMap = Object.fromEntries((points ?? []).map((p) => [p.id, p.point_nam
           else showDashboard();
         });
 
-        // 🔹 logout
+        // 🔹 LOGOUT
         logoutBtn?.addEventListener("click", async () => {
           await supabase.auth.signOut();
           showLogin();
         });
 
-        // 🔥 upload
-        if (form) {
-          form.addEventListener("submit", async (e) => {
-            e.preventDefault();
+        // 🔥 COMPRESS IMAGE
+        async function compressImage(file) {
+          return new Promise((resolve) => {
+            const img = new Image();
+            const reader = new FileReader();
 
-            const formData = new FormData(form);
-            const files = formData.getAll("files");
-            const point_id = formData.get("point_id");
+            reader.onload = (e) => (img.src = e.target.result);
 
-            try {
-              await Promise.all(
-                files.map(async (file) => {
-                  if (!file || typeof file === "string") return;
+            img.onload = () => {
+              const canvas = document.createElement("canvas");
 
-                  const filePath = `points/${point_id}/${Date.now()}-${file.name}`;
+              const MAX_WIDTH = 1600;
+              const scale = Math.min(1, MAX_WIDTH / img.width);
 
-                  const { error: uploadError } = await supabase.storage
-                    .from("images")
-                    .upload(filePath, file);
+              canvas.width = img.width * scale;
+              canvas.height = img.height * scale;
 
-                  if (uploadError) throw uploadError;
+              const ctx = canvas.getContext("2d");
+              ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-                  const { data } = supabase.storage.from("images").getPublicUrl(filePath);
-
-                  const { error: dbError } = await supabase.from("images").insert({
-                    point_id,
-                    url: data.publicUrl,
+              canvas.toBlob(
+                (blob) => {
+                  const compressed = new File([blob], file.name.replace(/\.\w+$/, ".jpg"), {
+                    type: "image/jpeg",
                   });
 
-                  if (dbError) throw dbError;
-                })
+                  resolve(compressed);
+                },
+                "image/jpeg",
+                0.7
               );
+            };
 
-              // ✅ ONLY runs after ALL uploads finish
-              showToast("✅ Obrázky nahrány");
-
-              form.reset();
-
-              const fileInput = form.querySelector('input[type="file"]');
-              if (fileInput) fileInput.value = "";
-            } catch (err) {
-              console.error(err);
-              showToast("❌ Upload selhal");
-            }
+            reader.readAsDataURL(file);
           });
         }
+
+        function formatSize(bytes) {
+          return (bytes / 1024 / 1024).toFixed(2) + " MB";
+        }
+
+        // 🔥 FILE CHANGE
+        fileInput.addEventListener("change", async () => {
+          const files = fileInput.files;
+          if (!files) return;
+
+          previewContainer.innerHTML = "";
+          compressedFiles = [];
+
+          fileText.textContent =
+            files.length === 1 ? files[0].name : `${files.length} souborů vybráno`;
+
+          for (const file of files) {
+            const compressed = await compressImage(file);
+            compressedFiles.push(compressed);
+
+            const wrapper = document.createElement("div");
+            wrapper.className = "preview-item";
+
+            const img = document.createElement("img");
+            img.src = URL.createObjectURL(compressed);
+
+            const info = document.createElement("div");
+            info.className = "preview-info";
+            info.textContent = `${formatSize(compressed.size)}`;
+
+            wrapper.appendChild(img);
+            wrapper.appendChild(info);
+            previewContainer.appendChild(wrapper);
+          }
+
+          fileInfo.textContent = `${compressedFiles.length} souborů připraveno`;
+        });
+
+        // 🔥 UPLOAD
+        form.addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const formData = new FormData(form);
+          const point_id = formData.get("point_id");
+
+          if (!point_id || compressedFiles.length === 0) {
+            showToast("Vyber bod a soubory");
+            return;
+          }
+
+          try {
+            for (const file of compressedFiles) {
+              const filePath = `points/${point_id}/${Date.now()}-${file.name}`;
+
+              const { error: uploadError } = await supabase.storage
+                .from("images")
+                .upload(filePath, file);
+
+              if (uploadError) throw uploadError;
+
+              const { data } = supabase.storage.from("images").getPublicUrl(filePath);
+
+              await supabase.from("images").insert({
+                point_id,
+                url: data.publicUrl,
+              });
+            }
+
+            showToast("✅ Obrázky nahrány");
+
+            form.reset();
+            previewContainer.innerHTML = "";
+            fileInfo.textContent = "";
+            fileText.textContent = "Vybrat obrázky";
+            compressedFiles = [];
+          } catch (err) {
+            console.error(err);
+            showToast("❌ Upload selhal");
+          }
+        });
 
         function showLogin() {
           loginEl.classList.remove("hidden");
@@ -206,34 +278,13 @@ const pointMap = Object.fromEntries((points ?? []).map((p) => [p.id, p.point_nam
           dashboardEl.classList.remove("hidden");
         }
 
-        // 🔥 TOAST
         function showToast(message) {
           const toast = document.createElement("div");
           toast.textContent = message;
           toast.className = "toast";
           document.body.appendChild(toast);
 
-          setTimeout(() => {
-            toast.remove();
-          }, 3000);
-        }
-      });
-
-      const fileInput = document.getElementById("file-input");
-      const fileText = document.getElementById("file-text");
-
-      fileInput?.addEventListener("change", () => {
-        const files = fileInput.files;
-
-        if (!files || files.length === 0) {
-          fileText.textContent = "Vybrat obrázky";
-          return;
-        }
-
-        if (files.length === 1) {
-          fileText.textContent = files[0].name;
-        } else {
-          fileText.textContent = `${files.length} souborů vybráno`;
+          setTimeout(() => toast.remove(), 3000);
         }
       });
     </script>
@@ -244,17 +295,14 @@ const pointMap = Object.fromEntries((points ?? []).map((p) => [p.id, p.point_nam
       /* max-width: 500px; */
       margin: 0 auto;
     }
-
     .dashboard-section {
       display: grid;
       grid-template-columns: 1fr;
       gap: 24px;
-
       @media (min-width: 720px) {
         grid-template-columns: 1fr 1fr;
       }
     }
-
     .card {
       background: var(--color-surface);
       border: 1px solid var(--color-border);
@@ -264,19 +312,17 @@ const pointMap = Object.fromEntries((points ?? []).map((p) => [p.id, p.point_nam
       display: flex;
       flex-direction: column;
       gap: 1rem;
+      overflow: hidden; /* 🔥 THIS FIXES MOST LAYOUT BREAKS */
     }
-
     .form {
       display: flex;
       flex-direction: column;
       gap: 10px;
       width: 100%;
     }
-
     .form > * {
       min-width: 0;
     }
-
     input,
     select {
       padding: 12px;
@@ -284,74 +330,46 @@ const pointMap = Object.fromEntries((points ?? []).map((p) => [p.id, p.point_nam
       border: 1px solid var(--color-border);
       font-size: 1rem;
     }
-
-    button {
-      padding: 12px;
-      border-radius: 8px;
-      border: none;
-      background: var(--color-primary);
-      color: white;
-      font-weight: 600;
-      font-size: 1rem;
-
-      &:hover {
-        cursor: pointer;
-      }
-    }
-
     .logout {
       width: 100%;
       background: #e53e3e;
-
       @media (min-width: 720px) {
         width: fit-content;
       }
     }
-
     .gallery {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 12px;
-
       @media (min-width: 500px) {
         grid-template-columns: repeat(3, 1fr);
       }
-
       @media (min-width: 720px) {
         grid-template-columns: repeat(2, 1fr);
       }
-
       @media (min-width: 920px) {
         grid-template-columns: repeat(3, 1fr);
       }
     }
-
     .image-item img {
       width: 100%;
       height: 120px;
       object-fit: cover;
       border-radius: 8px;
     }
-
     .meta {
       font-size: 0.8rem;
       color: var(--color-text-muted);
     }
-
     .hidden {
       display: none;
     }
-
     .error {
       color: #c53030;
-    }
-
-    /* 🔥 TOAST */
+    } /* 🔥 TOAST */
     .toast {
       position: fixed;
-      top: 20px;
-      /* left: 50%;
-    transform: translateX(-50%); */
+      top: 20px; /* left: 50%; transform: translateX(-50%); */
       left: 0;
       background: var(--color-primary);
       color: white;
@@ -361,57 +379,82 @@ const pointMap = Object.fromEntries((points ?? []).map((p) => [p.id, p.point_nam
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
       z-index: 1000;
     }
-
     select {
       width: 100%;
       max-width: 100%;
     }
-
     .file-upload {
       display: flex;
       flex-direction: column;
       gap: 6px;
-    }
-
-    /* hide native */
+    } /* hide native */
     .file-upload input {
       display: none;
-    }
-
-    /* custom button */
+    } /* custom button */
     .file-label {
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
-
       padding: 12px;
       border-radius: 10px;
-
       border: 1px dashed var(--color-border);
       background: var(--color-surface);
-
       font-size: 0.95rem;
       cursor: pointer;
       text-align: center;
-
       @media (min-width: 720px) {
         justify-content: flex-start;
       }
-
       .icon svg {
         stroke: var(--color-text);
       }
-    }
-
-    /* hover */
+    } /* hover */
     .file-label:hover {
       border-color: var(--color-primary);
-    }
-
-    /* selected text */
+    } /* selected text */
     .file-text-selected {
       font-size: 0.8rem;
+      color: var(--color-text-muted);
+    }
+
+    .preview {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+      gap: 8px;
+
+      max-width: 100%; /* 🔥 IMPORTANT */
+      overflow: hidden; /* 🔥 IMPORTANT */
+    }
+
+    :global(.preview-item) {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      overflow: hidden;
+    }
+
+    :global(.preview img) {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    :global(.preview-info) {
+      position: absolute;
+      bottom: 4px;
+      left: 4px;
+      right: 4px;
+
+      font-size: 0.65rem;
+      background: rgba(0, 0, 0, 0.6);
+      color: white;
+      padding: 2px 4px;
+      border-radius: 4px;
+    }
+    .file-info {
+      font-size: 0.85rem;
       color: var(--color-text-muted);
     }
   </style>

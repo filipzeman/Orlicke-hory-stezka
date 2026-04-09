@@ -1,23 +1,29 @@
 import type { Point } from "../types/point";
 import type { LocationGroup } from "../types/locationGroup";
 
-export function groupPointsByLocation(points: Point[]): LocationGroup[] {
+export function groupPointsByLocation(points: Point[]): Array<Point | LocationGroup> {
   const groups: Record<string, LocationGroup> = {};
+  const singles: Point[] = [];
 
   for (const point of points) {
-    const key = point.location_id?.trim() || point.id;
+    const locationId = point.location_id?.trim();
+    const locationName = point.location_name?.trim();
 
-    if (!groups[key]) {
-      groups[key] = {
-        location_id: key,
-        location_name: point.location_name ?? point.point_name,
-        km: point.km,
-        points: [],
-      };
+    if (locationId && locationName) {
+      if (!groups[locationId]) {
+        groups[locationId] = {
+          location_id: locationId,
+          location_name: locationName,
+          km: point.km,
+          points: [],
+        };
+      }
+
+      groups[locationId].points.push(point);
+    } else {
+      singles.push(point);
     }
-
-    groups[key].points.push(point);
   }
 
-  return Object.values(groups);
+  return [...Object.values(groups), ...singles];
 }

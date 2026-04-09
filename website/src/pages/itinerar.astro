@@ -2,8 +2,6 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { getSupabase } from "../lib/supabase.ts";
 import PointCard from "../components/PointCard.astro";
-import Icon from "../components/Icon.astro";
-import IconGuide from "../components/IconGuide.astro";
 
 import { categoryMap, typeMap } from "../utils/dataMapping.ts";
 import { mapKey } from "../utils/mapKey.ts";
@@ -23,9 +21,6 @@ if (!points) {
   return null;
 }
 
-const groupedPoints = groupPointsByLocation(points);
-groupedPoints.sort((a, b) => a.km - b.km);
-
 const sortedPoints = points
   .map((p) => ({
     ...p,
@@ -34,12 +29,15 @@ const sortedPoints = points
   }))
   .sort((a, b) => a.km - b.km);
 
+const groupedPoints = groupPointsByLocation(sortedPoints);
+groupedPoints.sort((a, b) => a.km - b.km);
+
 const filter = Astro.url.searchParams.get("filtr");
 
-console.log("ENV URL:", import.meta.env.PUBLIC_SUPABASE_URL);
+const showGroupedPoints = !filter || filter === "vse";
 
 const filteredPoints = sortedPoints.filter((point) => {
-  if (!filter || filter === "vse") return true;
+  if (filter === "vse" || !filter) return true;
   if (filter === "ubytovani") return point.categoryKey == "ubytovani";
   if (filter === "obcerstveni") return point.categoryKey == "obcerstveni";
   if (filter === "navigace") return point.categoryKey == "navigace";
@@ -48,6 +46,8 @@ const filteredPoints = sortedPoints.filter((point) => {
   if (filter === "ostatni") return point.categoryKey == "ostatni";
   return true;
 });
+
+const pointsToRender = showGroupedPoints ? groupedPoints : filteredPoints;
 
 const filters = [
   { key: "vse", label: "Vše" },
@@ -88,8 +88,8 @@ const filters = [
 
   <section class="container points">
     {
-      filteredPoints.map((point, index) => (
-        <PointCard filter={filter} point={point} last={index === filteredPoints.length - 1} />
+      pointsToRender.map((point, index) => (
+        <PointCard filter={filter} point={point} last={index === pointsToRender.length - 1} />
       ))
     }
   </section>

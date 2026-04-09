@@ -2,26 +2,43 @@
 import Icon from "./Icon.astro";
 import { getPointIcons } from "../utils/iconMapping";
 import DetailedInfo from "./DetailedInfo.astro";
-import { ETAPE_LENGTH } from "../constants/constants.ts";
 import { slugify } from "../utils/slugify.ts";
+import type { Point } from "../types/point";
+import type { LocationGroup } from "../types/locationGroup";
 
-const { filter, point, last } = Astro.props;
+const { filter, point, last } = Astro.props as {
+  filter?: string;
+  point: Point | LocationGroup;
+  last?: boolean;
+};
 
-const icons = getPointIcons(point);
+const isGroup = Array.isArray((point as LocationGroup).points);
+const pointAsPoint = point as Point;
+const pointAsGroup = point as LocationGroup;
 
-if (!icons.length) {
+const icons = isGroup
+  ? Array.from(
+      new Set(
+        pointAsGroup.points.flatMap((innerPoint) => getPointIcons(innerPoint))
+      )
+    )
+  : getPointIcons(pointAsPoint);
+
+if (!icons.length && !isGroup) {
   return null;
 }
 
-const pointTypeIcon: string = icons.shift() || "";
+const pointTypeIcon: string = !isGroup ? icons.shift() || "" : "";
 
-const distanceToEtapeFinish: number = Math.max(0, ETAPE_LENGTH - point.km);
+const displayName = isGroup
+  ? pointAsGroup.location_name || pointAsGroup.points[0]?.point_name
+  : pointAsPoint.point_name;
 
-// slug (grouped vs standalone)
-const slug = point.location_id ? point.location_id : slugify(point.point_name);
+const slug = isGroup
+  ? pointAsGroup.location_id
+  : slugify(pointAsPoint.point_name);
 
-// navigation mode
-const isNavigation = filter === "navigace";
+const isNavigation = filter === "navigace" && !isGroup;
 
 // map Czech colors → UI colors
 function getColor(color: string) {
@@ -41,7 +58,7 @@ function getColor(color: string) {
 
 // line color (only for navigation)
 const lineColor =
-  isNavigation && point.navigation_color ? getColor(point.navigation_color) : "#747474";
+  isNavigation && pointAsPoint.navigation_color ? getColor(pointAsPoint.navigation_color) : "#747474";
 ---
 
 <div
@@ -50,19 +67,21 @@ const lineColor =
 >
   <!-- KM -->
   <div class=`km ${isNavigation ? "no-accent" : ""}`>
-    <span>{point.km}</span>
+    <span>{isGroup ? pointAsGroup.km : pointAsPoint.km}</span>
   </div>
 
   <!-- CONTENT -->
-  <div class={!filter || filter == "all" ? "content default" : "content"}>
+  <div class={!filter || filter === "vse" ? "content default" : "content"}>
     <a href={`/bod/${slug}`} class="name">
-      {point.point_name}
-      <Icon name={pointTypeIcon} size={18} notInteractive />
+      {displayName}
+      {!isGroup && pointTypeIcon ? (
+        <Icon name={pointTypeIcon} size={18} notInteractive />
+      ) : null}
     </a>
 
     {
       filter === "ubytovani" || filter === "obcerstveni" ? (
-        <DetailedInfo point={point} />
+        <DetailedInfo point={pointAsPoint} />
       ) : (
         <div class="icons">
           {icons.map((icon) => (
@@ -138,6 +157,7 @@ const lineColor =
     display: flex;
     flex-direction: column;
     padding: 0.4rem 0;
+    align-items: flex-start;
   }
 
   /* NAME */

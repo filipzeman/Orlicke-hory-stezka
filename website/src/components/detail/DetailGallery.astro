@@ -3,14 +3,107 @@ const { images = [] } = Astro.props;
 ---
 
 {images.length > 0 && (
-  <div class="gallery">
-    {images.map((img: string) => (
-      <img src={img} alt="" loading="lazy" />
-    ))}
-  </div>
+  <>
+    <!-- THUMBNAILS -->
+    <div class="gallery">
+      {images.map((img: string, index: number) => (
+        <img
+          src={img}
+          alt=""
+          loading="lazy"
+          class="gallery-img"
+          data-index={index}
+        />
+      ))}
+    </div>
+
+    <!-- FULLSCREEN VIEWER -->
+    <div id="viewer" class="viewer hidden">
+      <img id="viewer-img" />
+
+      <button id="close-btn" class="viewer-close">✕</button>
+
+      <button id="prev-btn" class="viewer-nav left">‹</button>
+      <button id="next-btn" class="viewer-nav right">›</button>
+    </div>
+  </>
 )}
 
+<!-- CLIENT SCRIPT -->
+<script is:client>
+  window.addEventListener("DOMContentLoaded", () => {
+    const galleryImages = Array.from(document.querySelectorAll(".gallery-img"));
+
+    const viewer = document.getElementById("viewer");
+    const viewerImg = document.getElementById("viewer-img");
+
+    const closeBtn = document.getElementById("close-btn");
+    const prevBtn = document.getElementById("prev-btn");
+    const nextBtn = document.getElementById("next-btn");
+
+    let currentIndex = 0;
+
+    function openViewer(index) {
+      currentIndex = index;
+      viewerImg.src = galleryImages[index].src;
+      viewer.classList.remove("hidden");
+    }
+
+    function closeViewer() {
+      viewer.classList.add("hidden");
+    }
+
+    function showNext() {
+      currentIndex = (currentIndex + 1) % galleryImages.length;
+      viewerImg.src = galleryImages[currentIndex].src;
+    }
+
+    function showPrev() {
+      currentIndex = (currentIndex - 1 + galleryImages.length) % galleryImages.length;
+      viewerImg.src = galleryImages[currentIndex].src;
+    }
+
+    // click
+    galleryImages.forEach((img, index) => {
+      img.addEventListener("click", () => openViewer(index));
+    });
+
+    // buttons
+    closeBtn?.addEventListener("click", closeViewer);
+    nextBtn?.addEventListener("click", showNext);
+    prevBtn?.addEventListener("click", showPrev);
+
+    // click outside image = close
+    viewer?.addEventListener("click", (e) => {
+      if (e.target === viewer) closeViewer();
+    });
+
+    // ESC key
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closeViewer();
+      if (e.key === "ArrowRight") showNext();
+      if (e.key === "ArrowLeft") showPrev();
+    });
+
+    // swipe
+    let startX = 0;
+
+    viewer?.addEventListener("touchstart", (e) => {
+      startX = e.touches[0].clientX;
+    });
+
+    viewer?.addEventListener("touchend", (e) => {
+      const endX = e.changedTouches[0].clientX;
+      const diff = startX - endX;
+
+      if (diff > 50) showNext();
+      if (diff < -50) showPrev();
+    });
+  });
+</script>
+
 <style>
+/* THUMBNAILS */
 .gallery {
   display: flex;
   gap: 8px;
@@ -18,8 +111,63 @@ const { images = [] } = Astro.props;
   margin: 16px 0;
 }
 
-.gallery img {
+.gallery-img {
   height: 120px;
   border-radius: 8px;
+  cursor: pointer;
+}
+
+/* FULLSCREEN */
+.viewer {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.9);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+
+  z-index: 999;
+}
+
+.viewer.hidden {
+  display: none;
+}
+
+.viewer img {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+/* CLOSE */
+.viewer-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  font-size: 24px;
+  color: white;
+  background: none;
+  border: none;
+}
+
+/* NAV */
+.viewer-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+
+  font-size: 40px;
+  color: white;
+  background: none;
+  border: none;
+}
+
+.viewer-nav.left {
+  left: 10px;
+}
+
+.viewer-nav.right {
+  right: 10px;
 }
 </style>

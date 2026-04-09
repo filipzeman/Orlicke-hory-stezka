@@ -55,8 +55,6 @@ const { data: imagesData } = await supabase
 
 const images = imagesData?.map((img) => img.url) || [];
 
-console.log("IMAGES:", images);
-
 // 5. get location info
 const location = locationPoints[0] ?? null;
 
@@ -79,8 +77,6 @@ const sections = [
   { key: "turisticke_cile", title: "Turistické cíle" },
   { key: "ostatni", title: "Ostatní" },
 ];
-
-console.log("grouped", grouped);
 ---
 
 <BaseLayout title={`${location?.location_name || location?.point_name} | Orlické hory`}>
@@ -96,7 +92,7 @@ console.log("grouped", grouped);
               grouped[section.key]?.length > 0 && (
                 <DetailSection title={section.title}>
                   {grouped[section.key].map((service) => (
-                    <ServiceCard service={service} />
+                    <ServiceCard service={service} point={location} />
                   ))}
                 </DetailSection>
               )

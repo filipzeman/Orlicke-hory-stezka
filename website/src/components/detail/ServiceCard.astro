@@ -2,39 +2,54 @@
 import Icon from "../Icon.astro";
 
 const { service } = Astro.props;
+
+const notes =
+  service.note
+    ?.split("-")
+    .map((n) => n.replace(/^- /, "").trim())
+    .filter(Boolean) ?? [];
 ---
 
 <div class="card">
   <div class="title">{service.point_name}</div>
 
+  <div class="info">
+    {
+      service.phone && (
+        <a href={`tel:${service.phone}`}>
+          <Icon name="Phone" size={16} notInteractive />
+          {service.phone}
+        </a>
+      )
+    }
+
+    {
+      service.website && (
+        <a href={service.website} target="_blank">
+          <Icon name="Globe" size={16} notInteractive />
+          Web
+        </a>
+      )
+    }
+
+    {
+      service.opening_info && (
+        <div>
+          <Icon name="Clock" size={16} notInteractive />
+          {service.opening_info}
+        </div>
+      )
+    }
+  </div>
   {
-    service.phone && (
-      <a href={`tel:${service.phone}`}>
-        <Icon name="Phone" size={16} notInteractive />
-        {service.phone}
-      </a>
+    notes.length > 0 && (
+      <ul class="notes">
+        {notes.map((note) => (
+          <li>{note}</li>
+        ))}
+      </ul>
     )
   }
-
-  {
-    service.website && (
-      <a href={service.website} target="_blank">
-        <Icon name="Globe" size={16} notInteractive />
-        Web
-      </a>
-    )
-  }
-
-  {
-    service.opening_info && (
-      <div>
-        <Icon name="Clock" size={16} notInteractive />
-        {service.opening_info}
-      </div>
-    )
-  }
-
-  {service.note && <div class="note">{service.note}</div>}
 </div>
 
 <style>
@@ -52,9 +67,21 @@ const { service } = Astro.props;
     margin-bottom: 4px;
   }
 
-  .note {
+  .info {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 8px;
+  }
+
+  .notes {
     margin-top: 6px;
+    padding-left: 16px;
+  }
+
+  .notes li {
     font-size: 0.85rem;
-    color: #555;
+    color: var(--color-text-muted);
+    margin-bottom: 3px;
   }
 </style>
