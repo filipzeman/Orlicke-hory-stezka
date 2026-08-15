@@ -5,6 +5,7 @@ const { location, services = [] } = Astro.props;
 const has = (type: string) => services.some((s: any) => s.categoryKey === type);
 
 const locationName = location?.location_name || location?.point_name;
+console.log("location note", location.note);
 ---
 
 <header class="header">

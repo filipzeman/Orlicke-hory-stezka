@@ -113,6 +113,7 @@ export default function PointsSection() {
   const categories = Object.keys(pointMetadata.categories);
 
   const availableTypes = categoryKey ? categoryTypes[categoryKey] : [];
+  // console.log("category types", categoryTypes);
 
   function updateEditedPoint<K extends keyof Point>(key: K, value: Point[K]) {
     setEditedPoint((prev) => {
@@ -164,7 +165,7 @@ export default function PointsSection() {
     }
   }
 
-  console.log("editedPoint.category =", editedPoint?.category);
+  // console.log("editedPoint.category =", editedPoint?.category);
   return (
     <div className="points-content">
       {/* SELECTOR */}

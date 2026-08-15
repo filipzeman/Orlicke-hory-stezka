@@ -9,19 +9,38 @@ import DetailGallery from "../../components/detail/DetailGallery.astro";
 
 const supabase = getSupabase();
 
-import { categoryMap, typeMap } from "../../utils/dataMapping";
-import { slugify } from "../../utils/slugify";
-
 const IMAGES_BUCKET = "images";
 
-function toPublicImageUrl(image: string): string {
-  if (/^https?:\/\//i.test(image)) {
-    return image;
+function toPublicImageUrl(image: unknown): string | null {
+  let path: string | null = null;
+
+  if (typeof image === "string") {
+    path = image;
+  } else if (image && typeof image === "object") {
+    const value = image as { path?: unknown; url?: unknown; publicUrl?: unknown };
+
+    if (typeof value.publicUrl === "string") {
+      return value.publicUrl;
+    }
+
+    if (typeof value.url === "string") {
+      path = value.url;
+    } else if (typeof value.path === "string") {
+      path = value.path;
+    }
+  }
+
+  if (!path) {
+    return null;
+  }
+
+  if (/^https?:\/\//i.test(path)) {
+    return path;
   }
 
   const {
     data: { publicUrl },
-  } = supabase.storage.from(IMAGES_BUCKET).getPublicUrl(image.replace(/^\/+/, ""));
+  } = supabase.storage.from(IMAGES_BUCKET).getPublicUrl(path.replace(/^\/+/, ""));
 
   return publicUrl;
 }
@@ -34,23 +53,6 @@ const { data } = await supabase.from("points").select("*");
 
 const points = data ?? [];
 
-// 3. normalize (map Czech → keys)
-function mapKey(map: Record<string, string>, value: string | null | undefined) {
-  if (!value) return null;
-  return map[value] ?? null;
-}
-
-const normalized = points.map((p) => ({
-  ...p,
-  categoryKey: mapKey(categoryMap, p.category),
-  typeKey: mapKey(typeMap, p.type),
-}));
-
-console.log(
-  "Normalized points:",
-  normalized.filter((item) => item.location_id)
-);
-
 const normalize = (v: string | undefined) => v?.toLowerCase().replace(/_/g, "-");
 
 const pointIdMatch = slug?.match(/^(\d+)/);
@@ -62,59 +64,83 @@ if (pointIdMatch) {
 
   const pointId = `pt_${pointIdMatch[1]}`;
 
-  const point = normalized.find((p) => p.id === pointId);
+  const point = points.find((p) => p.id === pointId);
 
   locationPoints = point ? [point] : [];
 } else {
   // grouped location
 
-  locationPoints = normalized.filter(
+  locationPoints = points.filter(
     (p) => p.location_id && normalize(p.location_id) === normalize(slug)
   );
 }
 
-console.log(
-  locationPoints.map((p) => ({
-    id: p.id,
+// console.log(
+//   locationPoints.map((p) => ({
+//     id: p.id,
 
-    point_name: p.point_name,
+//     point_name: p.point_name,
 
-    location_id: p.location_id,
-  }))
-);
+//     location_id: p.location_id,
+//   }))
+// );
 
-// 5.1 collect point IDs for images
+// 5. Fetch details for all points at this location
 const pointIds = locationPoints.map((p) => p.id);
 
-// 5.2 fetch images
-const { data: imagesData } = await supabase
+const { data: detailsData, error: detailsError } = await supabase
   .from("point_details")
-  .select("images")
-  .in("point_id", pointIds)
-  .order("created_at", { ascending: false });
+  .select("*")
+  .in("point_id", pointIds);
 
-console.log("Fetched images:", imagesData?.length ? imagesData : "No images");
+if (detailsError) {
+  console.error("Failed to fetch point details:", detailsError);
+}
 
-const imageUrls =
-  imagesData?.flatMap(
-    (detail) => detail.images?.map((image: string) => toPublicImageUrl(image)) || []
-  ) || [];
+// Create quick lookup by point ID
+const detailsByPointId = new Map((detailsData ?? []).map((details) => [details.point_id, details]));
 
-console.log("imageUrls:", imageUrls?.length ? imageUrls : "No image URLs");
+// Combine points with their details
+locationPoints = locationPoints.map((point) => {
+  const details = detailsByPointId.get(point.id);
+
+  return {
+    ...point,
+
+    phone: details?.phone ?? null,
+    email: details?.email ?? null,
+    website: details?.website ?? null,
+    opening_info: details?.opening_info ?? null,
+    note: details?.note ?? null,
+    hikers_welcome: details?.hikers_welcome ?? false,
+
+    images: details?.images ?? [],
+  };
+});
+
+// Collect public image URLs
+const imageUrls = locationPoints.flatMap((point) =>
+  (point.images ?? [])
+    .map((image) => toPublicImageUrl(image))
+    .filter((url): url is string => Boolean(url))
+);
+
+console.log("Loaded point details:", detailsData?.length ?? 0);
+console.log("Image URLs:", imageUrls.length);
 
 // 5. get location info
 const location = locationPoints[0] ?? null;
 
 // 6. group by category
-const grouped: Record<string, typeof locationPoints> = {
-  ubytovani: locationPoints.filter((p) => p.categoryKey === "ubytovani"),
-  obcerstveni: locationPoints.filter((p) => p.categoryKey === "obcerstveni"),
-  doprava: locationPoints.filter((p) => p.categoryKey === "doprava"),
-  navigace: locationPoints.filter((p) => p.categoryKey === "navigace"),
-  turisticke_cile: locationPoints.filter((p) => p.categoryKey === "turisticke_cile"),
-  ostatni: locationPoints.filter((p) => p.categoryKey === "ostatni"),
-};
 
+const grouped: Record<string, typeof locationPoints> = {
+  ubytovani: locationPoints.filter((p) => p.category === "ubytovani"),
+  obcerstveni: locationPoints.filter((p) => p.category === "obcerstveni"),
+  doprava: locationPoints.filter((p) => p.category === "doprava"),
+  navigace: locationPoints.filter((p) => p.category === "navigace"),
+  turisticke_cile: locationPoints.filter((p) => p.category === "turisticke_cile"),
+  ostatni: locationPoints.filter((p) => p.category === "ostatni"),
+};
 // 7. order of sections
 const sections = [
   { key: "ubytovani", title: "Ubytování" },

@@ -11,7 +11,7 @@ export const categoryTypes: Record<Point["category"], Point["type"][]> = {
     "mapa",
     "zacatek_etapy",
     "konec_etapy",
-    "nouzovy bod",
+    "nouzovy_bod",
     "uzavirka",
     "turisticky_pristresek",
     "vrchol",
@@ -35,5 +35,5 @@ export const categoryTypes: Record<Point["category"], Point["type"][]> = {
     "ruina",
   ],
 
-  ostatni: ["razitko", "zasilkovna", "bankomat"],
+  ostatni: ["obec", "razitko", "zasilkovna", "bankomat"],
 };

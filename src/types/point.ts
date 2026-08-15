@@ -74,7 +74,7 @@ export type NavigationTypes =
   | "mapa"
   | "zacatek_etapy"
   | "konec_etapy"
-  | "nouzovy bod"
+  | "nouzovy_bod"
   | "uzavirka"
   | "turisticky_pristresek"
   | "vrchol"
@@ -100,4 +100,4 @@ export type TuristicGoalTypes =
   | "pechotni_srub"
   | "ruina";
 
-export type OtherServiceTypes = "razitko" | "zasilkovna" | "bankomat";
+export type OtherServiceTypes = "obec" | "razitko" | "zasilkovna" | "bankomat";
