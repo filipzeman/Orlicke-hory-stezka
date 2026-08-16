@@ -31,15 +31,6 @@ export interface Point {
   location_name?: string | null;
   point_name: string;
   slug: string;
-  categoryKey?: PointCategory | null;
-  typeKey?:
-    | AccomodationTypes
-    | FoodTypes
-    | NavigationTypes
-    | TransportTypes
-    | TuristicGoalTypes
-    | OtherServiceTypes
-    | null;
   details?: PointDetails | null;
 }
 

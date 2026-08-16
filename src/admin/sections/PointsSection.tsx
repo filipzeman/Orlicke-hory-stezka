@@ -6,11 +6,7 @@ import Input from "../ui/Input";
 
 import ImageGalleryField from "../components/media/ImageGalleryField";
 
-// 'import PointPickerModal from "../components/points/PointPickerModal";'
-import { categoryLookup } from "../config/categoryLookup";
 import { pointMetadata } from "../../config/pointMetadata";
-
-import { getCategoryKey } from "../../utils/pointMetadata";
 
 import { getPoints, getPointDetails, savePointDetails } from "../services/pointDetailsService";
 import { updatePoint } from "../services/pointService";
@@ -46,7 +42,7 @@ export default function PointsSection() {
 
   const [saved, setSaved] = useState(false);
 
-  const categoryKey = editedPoint?.category;
+  const selectedCategory = editedPoint?.category;
 
   useEffect(() => {
     async function load() {
@@ -55,7 +51,7 @@ export default function PointsSection() {
 
         const normalized = data.map((point) => ({
           ...point,
-          category: getCategoryKey(point.category) as Point["category"],
+          category: point.category,
           type: point.type,
         }));
 
@@ -112,7 +108,7 @@ export default function PointsSection() {
 
   const categories = Object.keys(pointMetadata.categories);
 
-  const availableTypes = categoryKey ? categoryTypes[categoryKey] : [];
+  const availableTypes = selectedCategory ? categoryTypes[selectedCategory] : [];
   // console.log("category types", categoryTypes);
 
   function updateEditedPoint<K extends keyof Point>(key: K, value: Point[K]) {
