@@ -10,7 +10,7 @@ import ImageGalleryField from "../components/media/ImageGalleryField";
 import { categoryLookup } from "../config/categoryLookup";
 import { pointMetadata } from "../../config/pointMetadata";
 
-import { getCategoryKey, getTypeKey } from "../../utils/pointMetadata";
+import { getCategoryKey } from "../../utils/pointMetadata";
 
 import { getPoints, getPointDetails, savePointDetails } from "../services/pointDetailsService";
 import { updatePoint } from "../services/pointService";
@@ -56,7 +56,7 @@ export default function PointsSection() {
         const normalized = data.map((point) => ({
           ...point,
           category: getCategoryKey(point.category) as Point["category"],
-          type: getTypeKey(point.type) as Point["type"],
+          type: point.type,
         }));
 
         setPoints(normalized);

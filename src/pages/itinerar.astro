@@ -3,10 +3,8 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import { getSupabase } from "../lib/supabase.ts";
 import PointCard from "../components/PointCard.astro";
 
-import { categoryMap, typeMap } from "../utils/dataMapping.ts";
-import { mapKey } from "../utils/mapKey.ts";
 import { groupPointsByLocation } from "../utils/groupPoints";
-import type { Point, PointCategory } from "../types/point";
+import type { Point } from "../types/point";
 import Icon from "../components/Icon.astro";
 
 const supabase = getSupabase();
@@ -15,7 +13,7 @@ const { data: detailsData } =
   await supabase
     .from("point_details")
     .select("*");
-
+ 
 const detailsMap = new Map(
   (detailsData ?? []).map((detail) => [
     detail.point_id,
@@ -39,13 +37,7 @@ if (!points) {
   console.log(`Načteno ${points.length} bodů z databáze.`);
 }
 
-const sortedPoints = points
-  .map((p) => ({
-    ...p,
-    categoryKey: mapKey(categoryMap, p.category) as PointCategory | null,
-    typeKey: mapKey(typeMap, p.type) as typeof p.type | null,
-  }))
-  .sort((a, b) => a.km - b.km);
+const sortedPoints = [...points].sort((a, b) => a.km - b.km);
 
 const groupedPoints = groupPointsByLocation(sortedPoints);
 groupedPoints.sort((a, b) => a.km - b.km);
@@ -55,7 +47,7 @@ const showGroupedPoints = !filter || filter === "vse";
 
 const filteredPoints = sortedPoints.filter((point) => {
   if (!filter || filter === "vse") return true;
-  return point.categoryKey === filter;
+  return point.category === filter;
 });
 
 const pointsToRender = showGroupedPoints ? groupedPoints : filteredPoints;
