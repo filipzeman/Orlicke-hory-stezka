@@ -11,111 +11,128 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     </div>
   </section>
 
-  <section class="container">
-    <h2>Poznámky k vydání</h2>
+  <section class="container section-finished">
+    <h2>🥾 Co už máš k dispozici</h2>
+    <p
+      style="margin-bottom: var(--space-lg); color: var(--color-text-muted); font-size: var(--font-size-lg);"
+    >
+      Zjistit, co tě čeká na trase, je teď snadnější než kdy dříve. Přesně víš, kde se nacházejí
+      zajímavé body, jaké jsou tam služby a jak si cestu naplánovat právě pro tebe.
+    </p>
     <div class="progress-container">
       <p>Pokrok k verzi 1.0</p>
       <div class="progress-bar">
-        <div class="progress" style="width: 80%;"></div>
+        <div class="progress" style="width: 90%;"></div>
       </div>
     </div>
-    <div class="versions-grid">
-      <div class="version-card">
+    <div class="versions-grid versions-grid-finished">
+      <div class="version-card version-card--finished">
         <h3>Verze 0.1 - Homepage a itinerář</h3>
         <p>Základní stránka s přehledem bodů podél trasy.</p>
       </div>
-      <div class="version-card">
+      <div class="version-card version-card--finished">
         <h3>Verze 0.15 - Detail bodu a kategorie</h3>
         <p>Přidány detaily pro každý bod a kategorizace.</p>
       </div>
-      <div class="version-card">
+      <div class="version-card version-card--finished">
         <h3>Verze 0.2 - Filtrování itineráře</h3>
         <p>Možnost filtrovat body podle kategorií.</p>
       </div>
-      <div class="version-card">
+      <div class="version-card version-card--finished">
         <h3>Verze 0.25 - UX a UI optimalizace</h3>
         <p>Vylepšení uživatelského rozhraní a zkušenosti.</p>
       </div>
-      <div class="version-card">
+      <div class="version-card version-card--finished">
         <h3>Verze 0.3 - Navigace s barvou trasy</h3>
         <p>Zobrazení barev trasy v navigaci.</p>
       </div>
-      <div class="version-card">
+      <div class="version-card version-card--finished">
         <h3>Verze 0.35 - Admin rozhraní pro upload</h3>
         <p>Nástroj pro správce k nahrávání obrázků.</p>
       </div>
-      <div class="version-card">
+      <div class="version-card version-card--finished">
         <h3>Verze 0.4 - Sdružení bodů a ikony typů</h3>
         <p>Seskupení bodů a zobrazení ikon typů.</p>
       </div>
-      <div class="version-card">
+      <div class="version-card version-card--finished">
         <h3>Verze 0.45 - 🤷 Stránka "Časté dotazy"</h3>
         <p>Přidání FAQ pro lepší uživatelskou podporu.</p>
       </div>
-      <div class="version-card">
+      <div class="version-card version-card--finished">
         <h3>Verze 0.5 - PWA, offline režim</h3>
         <p>Progressive Web App s offline podporou.</p>
       </div>
-      <div class="version-card">
+      <div class="version-card version-card--finished">
         <h3>Verze 0.6 - 🧭 Geolokace</h3>
-        <p>
-          Umožní uživateli zjistit svou aktuální polohu a zobrazit kde se nachází na trase
-          (itineráři).
-        </p>
+        <p>Umožní uživateli zobrazit nejbližší body na trase a navigovat k nim.</p>
       </div>
-      <div class="version-card">
+      <div class="version-card version-card--finished">
         <h3>Verze 0.65 - 🗻 Přidání interaktivní mapy - základní verze</h3>
         <p>Základní mapa s body pro lepší orientaci.</p>
       </div>
-      <div class="version-card">
+      <div class="version-card version-card--finished">
         <h3>Verze 0.7 - 🦄 Přepracováni administrace - články, FAQ, nastavení</h3>
         <p>Správci mohou editovat články, FAQ a nastavení aplikace.</p>
+      </div>
+      <div class="version-card version-card--finished">
+        <h3>
+          Verze 0.75 - 🦄 Přidání možnosti editování informací o jednotlivých bodech na trase,
+          nahrávání obrázků
+        </h3>
+        <p>Správci mohou editovat informace o jednotlivých bodech na trase a nahrávat obrázky.</p>
       </div>
     </div>
   </section>
 
-  <section class="container">
-    <h2>Plánované funkce do vydání 1.0</h2>
-    <div class="planned-grid">
-      <div class="planned-card">
-        <h4>Verze 0.75 - Export vyfiltrovaných bodů do PDF</h4>
+  <section class="container section-planned-before-1">
+    <h2>Funkce na kterých aktuálně pracujeme 👨‍💻</h2>
+    <div class="versions-grid">
+      <div class="version-card version-card--planned-before-1">
+        <h3>Verze 0.8 - Zajímavá místa - místa mimo trasu</h3>
+        <p>
+          Přidání míst do itineráře a na detail page, která nejsou přímo na trase, ale stojí za
+          návštěvu (ubytování, restaurace, ..).
+        </p>
+      </div>
+      <div class="version-card version-card--planned-before-1">
+        <h3>Verze 0.85 - Export vyfiltrovaných bodů do PDF</h3>
         <p>Možnost exportovat filtrované body pro tisk nebo sdílení.</p>
       </div>
-      <div class="planned-card">
-        <h4>Verze 0.8 - Přístupnost aplikace</h4>
-        <p>Vylepšení přístupnosti včetně pohybu klávesnicí a screen readerů.</p>
-      </div>
-      <div class="planned-card">
-        <h4>Verze 0.9 - Rozšíření mapy - pokročilá verze</h4>
+      <div class="version-card version-card--planned-before-1">
+        <h3>Verze 0.9 - Rozšíření mapy - pokročilá verze</h3>
         <p>
           Možnost přepínání mezi různými vrstvami mapy (občerstvení, ubytování, ..) a zobrazení
           tras.
         </p>
       </div>
-      <div class="planned-card">
-        <h4>Verze 1.00 - Dokončení a testování</h4>
+      <div class="version-card version-card--planned-before-1">
+        <h3>Verze 0.95 - Přístupnost aplikace</h3>
+        <p>Vylepšení přístupnosti včetně pohybu klávesnicí a screen readerů.</p>
+      </div>
+      <div class="version-card version-card--planned-before-1">
+        <h3>Verze 1.00 - Dokončení a testování</h3>
         <p>Dokončení všech plánovaných funkcí a jejich testování.</p>
       </div>
     </div>
   </section>
 
-  <section class="container">
+  <section class="container section-planned-after-1">
     <h2>Další plánované funkce po vydání 1.0</h2>
-    <div class="planned-grid">
-      <div class="planned-card">
-        <h4>1.1 Personalizace preferencí</h4>
+    <div class="versions-grid">
+      <div class="version-card version-card--planned-after-1">
+        <h3>1.1 Personalizace preferencí</h3>
         <p>Uložení nastavení jako směr cesty nebo režim aplikace.</p>
       </div>
 
-      <div class="planned-card">
-        <h4>1.2 Integrace s externími API</h4>
+      <div class="version-card version-card--planned-after-1">
+        <h3>1.2 Integrace s externími API</h3>
         <p>
           Integrace s externími API pro aktuální informace o počasí, dopravě a dalších službách.
         </p>
       </div>
 
-      <div class="planned-card">
-        <h4>V případě zájmu rozšíření na další etapy</h4>
+      <div class="version-card version-card--planned-after-1">
+        <h3>V případě zájmu rozšíření na další etapy</h3>
         <p>Rádi bychom rozšířili aplikaci na další etapy trasy pokud o to bude zájem.</p>
       </div>
     </div>
@@ -123,6 +140,10 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 </BaseLayout>
 
 <style>
+  h2 {
+    margin-bottom: var(--space-md);
+  }
+
   .hero {
     position: relative;
     height: 30vh; /* Nižší než homepage */
@@ -177,7 +198,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
   }
 
   .progress {
-    background: var(--color-primary);
+    background: var(--color-accent);
     height: 100%;
     transition: width 0.3s ease;
   }
@@ -191,41 +212,36 @@ import BaseLayout from "../layouts/BaseLayout.astro";
   .version-card {
     background: var(--color-surface);
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-sm);
     padding: var(--space-md);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-left-width: 4px;
+  }
+
+  .version-card--finished {
+    background: color-mix(in srgb, var(--color-accent) 8%, var(--color-surface));
+    border-color: color-mix(in srgb, var(--color-accent) 35%, var(--color-surface));
+    border-left-color: var(--color-accent);
+  }
+
+  .version-card--planned-before-1 {
+    background: color-mix(in srgb, var(--color-primary) 8%, var(--color-surface));
+    border-color: color-mix(in srgb, var(--color-primary) 35%, var(--color-surface));
+    border-left-color: var(--color-primary);
+  }
+
+  .version-card--planned-after-1 {
+    background: color-mix(in srgb, var(--color-danger) 7%, var(--color-surface));
+    border-color: color-mix(in srgb, var(--color-danger) 30%, var(--color-surface));
+    border-left-color: var(--color-danger);
   }
 
   .version-card h3 {
-    margin: 0 0 var(--space-sm);
-    color: var(--color-text);
-  }
-
-  .version-card p {
-    margin: 0;
-    color: var(--color-text-muted);
-  }
-
-  .planned-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: var(--space-md);
-  }
-
-  .planned-card {
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-sm);
-    padding: var(--space-sm);
-  }
-
-  .planned-card h4 {
-    margin: 0 0 var(--space-xs);
+    /* margin: 0 0 var(--space-xs); */
     color: var(--color-text);
     font-size: var(--font-size-sm);
   }
 
-  .planned-card p {
+  .version-card p {
     margin: 0;
     color: var(--color-text-muted);
     font-size: var(--font-size-sm);
