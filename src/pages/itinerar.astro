@@ -314,157 +314,155 @@ const filters = [
   styleTag.textContent = offlineStyles;
   document.head.appendChild(styleTag);
 
-  window.addEventListener("DOMContentLoaded", () => {
+  const initLocationButton = () => {
     const locationBtn = document.getElementById("location-btn");
     const status = document.getElementById("locate-status");
+    const filterBar = document.querySelector(".filter-bar");
+
+    if (!locationBtn) {
+      return;
+    }
 
     let locationActive = false;
     let currentElement = null;
 
-    const filterBar = document.querySelector(".filter-bar");
+    const handleSticky = () => {
+      if (!filterBar) return;
 
-  function handleSticky() {
-    const rect = filterBar.getBoundingClientRect();
+      const rect = filterBar.getBoundingClientRect();
+      if (rect.top <= 65) {
+        filterBar.classList.add("is-sticky");
+      } else {
+        filterBar.classList.remove("is-sticky");
+      }
+    };
 
-    if (rect.top <= 65) {
-      filterBar.classList.add("is-sticky");
-    } else {
-      filterBar.classList.remove("is-sticky");
-    }
-  }
+    window.addEventListener("scroll", handleSticky, { passive: true });
+    handleSticky();
 
-  window.addEventListener("scroll", handleSticky);
-
-    // --- helpers ---
-    function toRad(v) {
-      return (v * Math.PI) / 180;
+    function toRad(value) {
+      return (value * Math.PI) / 180;
     }
 
     function distance(a, b) {
-      const R = 6371;  
-
+      const earthRadius = 6371;
       const dLat = toRad(b.lat - a.lat);
       const dLng = toRad(b.lng - a.lng);
-
       const lat1 = toRad(a.lat);
       const lat2 = toRad(b.lat);
-
-      const aVal =
+      const aValue =
         Math.sin(dLat / 2) ** 2 + Math.sin(dLng / 2) ** 2 * Math.cos(lat1) * Math.cos(lat2);
-
-      const c = 2 * Math.atan2(Math.sqrt(aVal), Math.sqrt(1 - aVal));
-
-      return R * c;
+      const c = 2 * Math.atan2(Math.sqrt(aValue), Math.sqrt(1 - aValue));
+      return earthRadius * c;
     }
 
     function highlightNearest(user) {
       const items = Array.from(document.querySelectorAll(".item"));
-
       let closest = null;
       let minDist = Infinity;
 
-      items.forEach((el) => {
-        const lat = parseFloat(el.dataset.lat);
-        const lng = parseFloat(el.dataset.lng);
+      for (const el of items) {
+        const lat = Number(el.dataset.lat);
+        const lng = Number(el.dataset.lng);
 
-        if (!lat || !lng) return;
+        if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+          continue;
+        }
 
-        const d = distance(user, { lat, lng });
-
-        if (d < minDist) {
-          minDist = d;
+        const currentDistance = distance(user, { lat, lng });
+        if (currentDistance < minDist) {
+          minDist = currentDistance;
           closest = el;
         }
-      });
+      }
 
-      if (!closest) return null;
+      if (!closest) {
+        return null;
+      }
 
-      document.querySelectorAll(".item.active").forEach((i) => i.classList.remove("active"));
-
+      document.querySelectorAll(".item.active").forEach((item) => item.classList.remove("active"));
       closest.classList.add("active");
-
       return closest;
     }
 
     function getStickyOffset() {
       const stickyNav = document.querySelector(".sticky-nav");
-
-      let height = 0;
-
-      if (stickyNav) height += stickyNav.offsetHeight;
-
-      return height;
+      return stickyNav ? stickyNav.offsetHeight : 0;
     }
 
     function scrollToElement(el) {
       const offset = getStickyOffset();
-
       const y = el.getBoundingClientRect().top + window.pageYOffset - offset - 150;
-
-      window.scrollTo({
-        top: y,
-        behavior: "smooth",
-      });
+      window.scrollTo({ top: y, behavior: "smooth" });
     }
 
-    // --- restore previous session ---
     const stored = sessionStorage.getItem("user-location");
-
     if (stored) {
-      const user = JSON.parse(stored);
-      const el = highlightNearest(user);
+      try {
+        const user = JSON.parse(stored);
+        const el = highlightNearest(user);
 
-      if (el) {
-        currentElement = el;
-        locationActive = true;
-        locationBtn.textContent = "Poloha aktivní";
+        if (el) {
+          currentElement = el;
+          locationActive = true;
+          locationBtn.textContent = "Poloha aktivní";
+        }
+      } catch (error) {
+        console.warn("Invalid cached user location", error);
+        sessionStorage.removeItem("user-location");
       }
     }
 
-    // --- main button logic ---
-    locationBtn?.addEventListener("click", () => {
-      // FIRST CLICK → get location
-      if (!locationActive) {
-        if (!navigator.geolocation) {
-          status.textContent = "Geolokace není podporována";
-          return;
-        }
+    locationBtn.addEventListener("click", () => {
+      if (locationActive && currentElement) {
+        scrollToElement(currentElement);
+        return;
+      }
 
-        status.textContent = "Získávám polohu…";
+      if (!navigator.geolocation) {
+        if (status) status.textContent = "Geolokace není podporována";
+        return;
+      }
 
-        navigator.geolocation.getCurrentPosition(
-          (pos) => {
-            const user = {
-              lat: pos.coords.latitude,
-              lng: pos.coords.longitude,
-            };
+      if (status) status.textContent = "Získávám polohu…";
 
-            sessionStorage.setItem("user-location", JSON.stringify(user));
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const user = {
+            lat: pos.coords.latitude,
+            lng: pos.coords.longitude,
+          };
 
-            const el = highlightNearest(user);
+          sessionStorage.setItem("user-location", JSON.stringify(user));
 
-            if (el) {
-              currentElement = el;
-              scrollToElement(el);
-            }
-
-            locationActive = true;
-            locationBtn.textContent = "📍 Poloha aktivní";
-            status.textContent = "";
-          },
-          () => {
-            status.textContent = "Poloha zamítnuta";
+          const el = highlightNearest(user);
+          if (el) {
+            currentElement = el;
+            scrollToElement(el);
           }
-        );
-      }
-      // NEXT CLICKS → just scroll
-      else {
-        if (currentElement) {
-          scrollToElement(currentElement);
-        }
-      }
+
+          locationActive = true;
+          locationBtn.textContent = "📍 Poloha aktivní";
+          if (status) status.textContent = "";
+        },
+        (error) => {
+          console.warn("Geolocation failed", error);
+          if (status) status.textContent = "Poloha zamítnuta";
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 12000,
+          maximumAge: 0,
+        },
+      );
     });
-  });
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initLocationButton, { once: true });
+  } else {
+    initLocationButton();
+  }
 </script>
 
 <style>
