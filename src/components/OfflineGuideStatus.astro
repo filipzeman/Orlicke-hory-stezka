@@ -211,12 +211,11 @@
       const isReady = status === "ready" && !!guide;
       const isOffline = typeof navigator !== "undefined" && !navigator.onLine;
 
-      buttonEl.disabled = isOffline && !isReady;
+      buttonEl.disabled = false;
       removeButtonEl.disabled = !isReady;
 
       if (isReady) {
-        buttonEl.textContent = isOffline ? "Připojení není k dispozici" : "Aktualizovat průvodce";
-        buttonEl.disabled = isOffline;
+        buttonEl.textContent = "Aktualizovat průvodce";
         statusEl.dataset.state = "ready";
         setBadge("Staženo", "success");
         setMessage(
@@ -233,13 +232,12 @@
         setMessage("Offline průvodce není dostupný. Zkuste to znovu.", "error");
         setUpdatedText("Při načítání dat došlo k chybě.");
       } else {
-        buttonEl.textContent = isOffline ? "Připojení není k dispozici" : "Stáhnout průvodce";
-        buttonEl.disabled = isOffline;
+        buttonEl.textContent = "Stáhnout průvodce";
         statusEl.dataset.state = "empty";
         setBadge("Není stažen", "neutral");
         setMessage(
           isOffline
-            ? "Bez internetu je k dispozici jen stažený průvodce, který zatím není uložen."
+            ? "Bez internetu nelze stáhnout nový průvodce. Připojte se k síti a stiskněte tlačítko znovu."
             : "Stáhněte si průvodce pro používání bez internetu.",
           "neutral",
         );
@@ -258,6 +256,17 @@
 
   async function handleDownload() {
     if (!buttonEl || !statusEl) return;
+
+    const isOffline = typeof navigator !== "undefined" && !navigator.onLine;
+
+    if (isOffline) {
+      statusEl.dataset.state = "error";
+      setBadge("Offline", "neutral");
+      setMessage("K stažení průvodce je potřeba připojení k internetu.", "error");
+      setUpdatedText("Připojte se k síti a zkuste to znovu.");
+      buttonEl.disabled = false;
+      return;
+    }
 
     buttonEl.disabled = true;
     statusEl.dataset.state = "empty";
