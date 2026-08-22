@@ -9,29 +9,21 @@ import Icon from "../components/Icon.astro";
 
 const supabase = getSupabase();
 let { data } = await supabase.from("points").select("*").order("km", { ascending: true });
-const { data: detailsData } =
-  await supabase
-    .from("point_details")
-    .select("*");
- 
+const { data: detailsData } = await supabase.from("point_details").select("*");
+
+const safeData = Array.isArray(data) ? data : [];
+const safeDetailsData = Array.isArray(detailsData) ? detailsData : [];
+
 const detailsMap = new Map(
-  (detailsData ?? []).map((detail) => [
-    detail.point_id,
-    detail,
-  ])
+  safeDetailsData.map((detail) => [detail.point_id, detail]),
 );
 
-let points = (data as Point[]).map(
-  (point) => ({
-    ...point,
+let points = safeData.map((point) => ({
+  ...point,
+  details: detailsMap.get(point.id) ?? null,
+})) as Point[];
 
-    details:
-      detailsMap.get(point.id) ?? null,
-  })
-);
-
-if (!points) { 
-  points = [];
+if (!points.length) {
   console.error("Nenalezena žádná data o bodech.");
 } else {
   console.log(`Načteno ${points.length} bodů z databáze.`);
@@ -108,6 +100,220 @@ const filters = [
   </section>
 </BaseLayout>
 <script type="module">
+  import {
+    getOfflineGuideRuntimeState,
+    loadOfflineGuide,
+    normalizeGuideSlug,
+  } from "/src/lib/offlineGuide.ts";
+  import { getPointSlug } from "/src/utils/getPointsSlug.ts";
+
+  const offlineContainer = document.querySelector(".points");
+
+  async function renderOfflineItinerary() {
+    if (!offlineContainer) return;
+
+    const state = await getOfflineGuideRuntimeState();
+    const guide = state.guide;
+    if (!guide || !state.shouldUseOfflineFallback) return;
+
+    const params = new URLSearchParams(window.location.search);
+    const selectedFilter = params.get("filtr") || "vse";
+    const filteredPoints = (guide.points ?? []).filter((point) => {
+      if (!point) return false;
+      return selectedFilter === "vse" ? true : point.category === selectedFilter;
+    });
+
+    if (!filteredPoints.length) {
+      offlineContainer.innerHTML =
+        '<p class="text-center text-muted">Offline průvodce neobsahuje žádné body pro tento filtr.</p>';
+      return;
+    }
+
+    const groupedByLocation = new Map();
+
+    for (const point of filteredPoints) {
+      const key = point.location_id || point.location_name || point.point_name || `${point.km ?? "-"}-${point.id}`;
+      const existing = groupedByLocation.get(key);
+
+      if (existing) {
+        existing.km = existing.km ?? point.km;
+        existing.points.push(point);
+        continue;
+      }
+
+      groupedByLocation.set(key, {
+        locationName: point.location_name || point.point_name || "Bod trasy",
+        km: point.km,
+        points: [point],
+      });
+    }
+
+    const groupedItems = [...groupedByLocation.values()].sort((a, b) => (a.km ?? 0) - (b.km ?? 0));
+    const categoryLabels = {
+      ubytovani: "Ubytování",
+      obcerstveni: "Občerstvení",
+      navigace: "Navigace",
+      doprava: "Doprava",
+      turisticke_cile: "Turistické cíle",
+      ostatni: "Ostatní",
+    };
+
+    const links = groupedItems
+      .map((group) => {
+        const representative = group.points?.[0];
+        if (!representative) return "";
+
+        const slug = getPointSlug(representative);
+        const displayName = representative.location_name || representative.point_name || "Bod trasy";
+        const km = representative.km ? `${representative.km} km` : "Bez km";
+        const href = `/bod/${normalizeGuideSlug(slug)}`;
+        const categories = [...new Set(group.points.map((point) => point.category).filter(Boolean))];
+        const badges = categories
+          .slice(0, 3)
+          .map((category) => `<span class="offline-guide-pill">${categoryLabels[category] || category}</span>`)
+          .join("");
+
+        return `
+          <div class="offline-guide-item">
+            <a href="${href}" class="offline-guide-link">
+              <div class="offline-guide-main">
+                <span class="offline-guide-name">${displayName}</span>
+                <div class="offline-guide-badges">${badges}</div>
+              </div>
+              <span class="offline-guide-meta">${km}</span>
+            </a>
+          </div>
+        `;
+      })
+      .join("");
+
+    offlineContainer.innerHTML = `
+      <div class="offline-guide-header">
+        <h2>Stáhnutý průvodce</h2>
+        <span>Bez internetu</span>
+      </div>
+      <div class="offline-guide-list">${links}</div>
+    `;
+  }
+
+  const shouldUseOfflineFallback = async () => {
+    const state = await getOfflineGuideRuntimeState();
+    return state.shouldUseOfflineFallback && state.pwaInstalled;
+  };
+
+  const initOfflineFallback = async () => {
+    if (await shouldUseOfflineFallback()) {
+      await renderOfflineItinerary();
+    }
+  };
+
+  window.addEventListener("DOMContentLoaded", initOfflineFallback);
+  document.addEventListener("astro:after-swap", initOfflineFallback);
+  document.addEventListener("astro:page-load", initOfflineFallback);
+  window.addEventListener("online", async () => {
+    if (!(await shouldUseOfflineFallback())) {
+      window.location.reload();
+    }
+  });
+  window.addEventListener("offline", initOfflineFallback);
+
+  const offlineStyles = `
+    .offline-guide-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin: 0 0 1rem;
+      padding: 0.45rem 0;
+      border-bottom: 1px solid rgba(15, 23, 42, 0.1);
+    }
+
+    .offline-guide-header h2 {
+      margin: 0;
+      font-size: clamp(1.4rem, 2vw, 2rem);
+    }
+
+    .offline-guide-header span {
+      color: rgba(15, 23, 42, 0.62);
+      font-size: 0.82rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .offline-guide-list {
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    .offline-guide-item {
+      border: 1px solid rgba(15, 23, 42, 0.1);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.7);
+      overflow: hidden;
+      transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .offline-guide-item:hover {
+      transform: translateY(-1px);
+      border-color: rgba(15, 23, 42, 0.18);
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
+    }
+
+    .offline-guide-link {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1rem 1.1rem;
+      text-decoration: none;
+      color: inherit;
+      font-weight: 600;
+    }
+
+    .offline-guide-main {
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+      min-width: 0;
+    }
+
+    .offline-guide-name {
+      color: var(--color-text, #0f172a);
+      font-size: 1rem;
+      line-height: 1.35;
+    }
+
+    .offline-guide-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+
+    .offline-guide-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.2rem 0.45rem;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.06);
+      color: rgba(15, 23, 42, 0.74);
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+
+    .offline-guide-meta {
+      font-size: 0.8rem;
+      color: rgba(15, 23, 42, 0.68);
+      white-space: nowrap;
+    }
+  `;
+
+  const styleTag = document.createElement("style");
+  styleTag.textContent = offlineStyles;
+  document.head.appendChild(styleTag);
+
   window.addEventListener("DOMContentLoaded", () => {
     const locationBtn = document.getElementById("location-btn");
     const status = document.getElementById("locate-status");

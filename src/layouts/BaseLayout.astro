@@ -1,8 +1,7 @@
 ---
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
-import InstallBanner from "../components/InstallBanner.astro";
-import InstallModal from "../components/InstallModal.astro";
+import OfflineGuideStatus from "../components/OfflineGuideStatus.astro";
 import "../styles/globals.css";
 import "../styles/tokens.css";
 import "../styles/utilities.css";
@@ -60,8 +59,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site || "https://orlicke-
 
   <body>
     <Header settings={settings} />
-    <InstallBanner />
-    <InstallModal />
+    <OfflineGuideStatus />
     <main class="page">
       <slot />
     </main>
@@ -71,9 +69,22 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site || "https://orlicke-
 
 <script>
   if ("serviceWorker" in navigator) {
-    window.addEventListener("load", () => {
-      navigator.serviceWorker.register("/sw.js");
-    });
+    const isLocalhost =
+      window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+
+    if (isLocalhost) {
+      navigator.serviceWorker.getRegistrations().then((registrations) => {
+        registrations.forEach((registration) => {
+          registration.unregister().catch(() => {
+            // ignore stale service-worker cleanup errors in local development
+          });
+        });
+      });
+    } else {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/sw.js");
+      });
+    }
   }
 </script>
 <script>
@@ -122,14 +133,6 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site || "https://orlicke-
     };
     return icons[iconName] || icons["info"];
   }
-
-  window.addEventListener("load", () => {
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.ready.then(() => {
-        showOfflineToast("Aplikace je připravena pro offline použití", "ready", 5000);
-      });
-    }
-  });
 
   window.addEventListener("offline", () => {
     showOfflineToast("Jste offline - aplikace funguje bez internetu", "offline", 6000);

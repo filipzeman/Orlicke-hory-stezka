@@ -1,6 +1,7 @@
 ---
 import { getSupabase } from "../../lib/supabase";
 import { marked } from "marked";
+import { slugify } from "../../utils/slugify";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import DetailHeader from "../../components/detail/DetailHeader.astro";
 import DetailSection from "../../components/detail/DetailSection.astro";
@@ -10,6 +11,8 @@ import DetailGallery from "../../components/detail/DetailGallery.astro";
 const supabase = getSupabase();
 
 const IMAGES_BUCKET = "images";
+
+const safeArray = <T,>(value: T[] | null | undefined): T[] => (Array.isArray(value) ? value : []);
 
 function toPublicImageUrl(image: unknown): string | null {
   let path: string | null = null;
@@ -51,9 +54,9 @@ const { slug } = Astro.params;
 // 2. fetch ALL points (simple & fast enough)
 const { data } = await supabase.from("points").select("*");
 
-const points = data ?? [];
+const points = safeArray(data as Array<any>);
 
-const normalize = (v: string | undefined) => v?.toLowerCase().replace(/_/g, "-");
+const normalize = (v: string | undefined) => slugify(v ?? "");
 
 const pointIdMatch = slug?.match(/^(\d+)/);
 
@@ -175,3 +178,199 @@ const sections = [
     }
   </main>
 </BaseLayout>
+<script type="module">
+  import {
+    getOfflineGuideRuntimeState,
+    getGuideRoutePoints,
+    normalizeGuideSlug,
+  } from "/src/lib/offlineGuide.ts";
+
+  function renderOfflineDetail() {
+    const slug = normalizeGuideSlug(window.location.pathname.replace(/^\/bod\//, ""));
+    const main = document.querySelector("main.container");
+
+    if (!main) return;
+
+    getOfflineGuideRuntimeState().then((state) => {
+      const guide = state.guide;
+      if (!guide || !slug || !state.shouldUseOfflineFallback) {
+        main.innerHTML = `
+          <section class="offline-empty-state">
+            <div class="offline-empty-card">
+              <p class="eyebrow">Offline průvodce</p>
+              <h1>Stáhnutý obsah není k dispozici</h1>
+              <p>Nejdříve si stáhněte průvodce pro tuto aplikaci, aby se zde zobrazily informace i bez internetu.</p>
+              <a href="/" class="back-link">Zpět na úvod</a>
+            </div>
+          </section>
+        `;
+        return;
+      }
+
+      const points = getGuideRoutePoints(guide, slug);
+      if (!points.length) {
+        main.innerHTML = `
+          <section class="offline-empty-state">
+            <div class="offline-empty-card">
+              <p class="eyebrow">Offline průvodce</p>
+              <h1>Detail neexistuje v stažené verzi</h1>
+              <p>Pro tento bod není k dispozici offline data. Zkuste otevřít stránku online nebo stáhnout nový průvodce.</p>
+              <a href="/itinerar" class="back-link">Zobrazit itinerář</a>
+            </div>
+          </section>
+        `;
+        return;
+      }
+
+      const location = points[0];
+      const title = location.location_name || location.point_name;
+      const km = location.km ?? "";
+      const grouped = {
+        ubytovani: points.filter((p) => p.category === "ubytovani"),
+        obcerstveni: points.filter((p) => p.category === "obcerstveni"),
+        doprava: points.filter((p) => p.category === "doprava"),
+        navigace: points.filter((p) => p.category === "navigace"),
+        turisticke_cile: points.filter((p) => p.category === "turisticke_cile"),
+        ostatni: points.filter((p) => p.category === "ostatni"),
+      };
+
+      const sections = [
+        { key: "ubytovani", title: "Ubytování" },
+        { key: "obcerstveni", title: "Občerstvení" },
+        { key: "navigace", title: "Navigace" },
+        { key: "doprava", title: "Doprava" },
+        { key: "turisticke_cile", title: "Turistické cíle" },
+        { key: "ostatni", title: "Ostatní" },
+      ];
+
+      const sectionMarkup = sections
+        .filter((section) => grouped[section.key]?.length)
+        .map((section) => {
+          const cards = grouped[section.key]
+            .map((service) => {
+              const notes =
+                (service.note ?? "")
+                  .split("-")
+                  .map((entry) => entry.replace(/^-\s?/, "").trim())
+                  .filter(Boolean) ?? [];
+
+              const contactItems = [
+                service.phone
+                  ? `<a class="service-info" href="tel:${service.phone}"><span>${service.phone}</span></a>`
+                  : "",
+                service.website
+                  ? `<a class="service-info" href="${service.website}" target="_blank" rel="noreferrer"><span>${service.website}</span></a>`
+                  : "",
+                service.opening_info
+                  ? `<div class="service-info"><span>${service.opening_info}</span></div>`
+                  : "",
+              ]
+                .filter(Boolean)
+                .join("");
+
+              const notesMarkup = notes.length
+                ? `<ul class="notes">${notes.map((note) => `<li>${note}</li>`).join("")}</ul>`
+                : "";
+
+              return `
+                <div class="card">
+                  <div class="title">${service.point_name}</div>
+                  <div class="info">${contactItems}</div>
+                  ${notesMarkup}
+                </div>
+              `;
+            })
+            .join("");
+
+          return `
+            <section class="section">
+              <h2>${section.title}</h2>
+              <div class="content">${cards}</div>
+            </section>
+          `;
+        })
+        .join("");
+
+      const summary = [
+        grouped.ubytovani.length ? "Ubytování" : "",
+        grouped.obcerstveni.length ? "Občerstvení" : "",
+        grouped.doprava.length ? "Doprava" : "",
+        grouped.navigace.length ? "Navigace" : "",
+        grouped.turisticke_cile.length ? "Turistické cíle" : "",
+        grouped.ostatni.length ? "Ostatní" : "",
+      ]
+        .filter(Boolean)
+        .join(" · ");
+
+      main.innerHTML = `
+        <header class="header">
+          <div class="location-info">
+            <h1>${title} <span> | ${km} km</span></h1>
+          </div>
+          <div class="summary">${summary || "Offline data"}</div>
+        </header>
+        ${sectionMarkup}
+      `;
+    });
+  }
+
+  window.addEventListener("DOMContentLoaded", async () => {
+    const state = await getOfflineGuideRuntimeState();
+    if (state.shouldUseOfflineFallback && state.pwaInstalled) {
+      renderOfflineDetail();
+    }
+  });
+</script>
+
+<style>
+  .offline-empty-state {
+    display: flex;
+    justify-content: center;
+    padding: 4rem 1rem;
+  }
+
+  .offline-empty-card {
+    max-width: 680px;
+    width: 100%;
+    padding: 2rem;
+    border-radius: 20px;
+    border: 1px solid rgba(15, 23, 42, 0.1);
+    background: rgba(255, 255, 255, 0.82);
+    box-shadow: 0 24px 60px rgba(15, 23, 42, 0.08);
+  }
+
+  .eyebrow {
+    margin: 0 0 0.75rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: #4f46e5;
+  }
+
+  .offline-empty-card h1 {
+    margin: 0 0 1rem;
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    line-height: 1.1;
+  }
+
+  .offline-empty-card p {
+    margin: 0 0 1.25rem;
+    color: rgba(15, 23, 42, 0.75);
+    font-size: 1.02rem;
+    line-height: 1.65;
+  }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1.1rem;
+    border-radius: 999px;
+    background: #0f172a;
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+  }
+</style>
