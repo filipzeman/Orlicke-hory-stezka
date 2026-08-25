@@ -178,12 +178,12 @@ const sections = [
     }
   </main>
 </BaseLayout>
-<script type="module">
+<script>
   import {
     getOfflineGuideRuntimeState,
     getGuideRoutePoints,
     normalizeGuideSlug,
-  } from "/src/lib/offlineGuide.ts";
+  } from "../../lib/offlineGuide.ts";
 
   function renderOfflineDetail() {
     const slug = normalizeGuideSlug(window.location.pathname.replace(/^\/bod\//, ""));

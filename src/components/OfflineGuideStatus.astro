@@ -33,7 +33,10 @@
     justify-content: space-between;
     gap: 16px;
     box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
-    transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    transition:
+      border-color 0.2s ease,
+      box-shadow 0.2s ease,
+      background 0.2s ease;
   }
 
   .offline-guide-status[data-state="ready"] {
@@ -154,13 +157,13 @@
   }
 </style>
 
-<script type="module">
+<script>
   import {
     deleteOfflineGuide,
     downloadOfflineGuide,
     loadOfflineGuide,
     getOfflineGuideStatus,
-  } from "/src/lib/offlineGuide.ts";
+  } from "../lib/offlineGuide.ts";
 
   const messageEl = document.getElementById("offline-guide-message");
   const badgeEl = document.getElementById("offline-guide-badge");
@@ -222,7 +225,7 @@
           isOffline
             ? "Průvodce je stažený a dostupný i bez internetu."
             : "Průvodce je připravený k použití offline.",
-          "success",
+          "success"
         );
         setUpdatedText(`Poslední aktualizace: ${formatGuideDate(guide.generatedAt)}`);
       } else if (status === "error") {
@@ -239,7 +242,7 @@
           isOffline
             ? "Bez internetu nelze stáhnout nový průvodce. Připojte se k síti a stiskněte tlačítko znovu."
             : "Stáhněte si průvodce pro používání bez internetu.",
-          "neutral",
+          "neutral"
         );
         setUpdatedText("Zatím nebylo staženo");
       }

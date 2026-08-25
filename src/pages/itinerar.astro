@@ -99,13 +99,13 @@ const filters = [
     }
   </section>
 </BaseLayout>
-<script type="module">
+<script>
   import {
     getOfflineGuideRuntimeState,
     loadOfflineGuide,
     normalizeGuideSlug,
-  } from "/src/lib/offlineGuide.ts";
-  import { getPointSlug } from "/src/utils/getPointsSlug.ts";
+  } from "../lib/offlineGuide.ts";
+  import { getPointSlug } from "../utils/getPointsSlug.ts";
 
   const offlineContainer = document.querySelector(".points");
 
