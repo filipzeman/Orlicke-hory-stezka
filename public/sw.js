@@ -1,5 +1,5 @@
 const CACHE_PREFIX = "stezka-app-shell";
-const CACHE_VERSION = "v2";
+const CACHE_VERSION = "v3";
 const CACHE_NAME = `${CACHE_PREFIX}-${CACHE_VERSION}`;
 
 const APP_SHELL = [
@@ -98,6 +98,11 @@ self.addEventListener("fetch", (event) => {
           return response;
         } catch (error) {
           const cache = await caches.open(CACHE_NAME);
+          const exactMatch = await cache.match(request);
+          if (exactMatch) {
+            return exactMatch;
+          }
+
           const cached = await cache.match(request, { ignoreSearch: true });
           if (cached) {
             return cached;

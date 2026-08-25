@@ -42,8 +42,10 @@ const { images = [] } = Astro.props;
     const nextBtn = document.getElementById("next-btn");
 
     let currentIndex = 0;
+    let brokenCount = 0;
 
     function openViewer(index) {
+      if (galleryImages[index]?.classList.contains("gallery-img-broken")) return;
       currentIndex = index;
       viewerImg.src = galleryImages[index].src;
       viewer.classList.remove("hidden");
@@ -66,6 +68,15 @@ const { images = [] } = Astro.props;
     // click
     galleryImages.forEach((img, index) => {
       img.addEventListener("click", () => openViewer(index));
+      // image not cached offline (or otherwise unavailable) - hide instead of showing broken icon
+      img.addEventListener("error", () => {
+        img.classList.add("gallery-img-broken");
+        img.style.display = "none";
+        brokenCount += 1;
+        if (brokenCount === galleryImages.length) {
+          document.querySelector(".gallery")?.classList.add("gallery-empty");
+        }
+      });
     });
 
     // buttons
@@ -115,6 +126,10 @@ const { images = [] } = Astro.props;
   height: 120px;
   border-radius: 8px;
   cursor: pointer;
+}
+
+.gallery-empty {
+  display: none;
 }
 
 /* FULLSCREEN */

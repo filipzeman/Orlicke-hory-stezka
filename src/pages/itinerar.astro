@@ -217,6 +217,42 @@ const filters = [
   });
   window.addEventListener("offline", initOfflineFallback);
 
+  // The service worker caches "/itinerar" ignoring the query string, so a full
+  // page navigation to a different filter can serve back a stale/mismatched
+  // cached page offline. Intercept filter clicks and re-render client-side
+  // instead, so filtering always works regardless of what the cache returns.
+  const filterLinks = Array.from(document.querySelectorAll<HTMLAnchorElement>(".filter-icon"));
+
+  function setActiveFilterLink(filterKey: string) {
+    filterLinks.forEach((link) => {
+      const linkUrl = new URL(link.href, window.location.origin);
+      const linkFilter = linkUrl.searchParams.get("filtr") || "vse";
+      link.classList.toggle("active", linkFilter === filterKey);
+    });
+  }
+
+  filterLinks.forEach((link) => {
+    link.addEventListener("click", async (event) => {
+      if (!(await shouldUseOfflineFallback())) return;
+
+      event.preventDefault();
+      const linkUrl = new URL(link.href, window.location.origin);
+      const filterKey = linkUrl.searchParams.get("filtr") || "vse";
+
+      window.history.pushState({}, "", linkUrl.toString());
+      setActiveFilterLink(filterKey);
+      await renderOfflineItinerary();
+    });
+  });
+
+  window.addEventListener("popstate", async () => {
+    if (!(await shouldUseOfflineFallback())) return;
+
+    const params = new URLSearchParams(window.location.search);
+    setActiveFilterLink(params.get("filtr") || "vse");
+    await renderOfflineItinerary();
+  });
+
   const offlineStyles = `
     .offline-guide-header {
       display: flex;
