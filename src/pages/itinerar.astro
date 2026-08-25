@@ -106,6 +106,7 @@ const filters = [
     normalizeGuideSlug,
   } from "../lib/offlineGuide.ts";
   import { getPointSlug } from "../utils/getPointsSlug.ts";
+  import { pointMetadata } from "../config/pointMetadata.ts";
 
   const offlineContainer = document.querySelector(".points");
 
@@ -149,14 +150,6 @@ const filters = [
     }
 
     const groupedItems = [...groupedByLocation.values()].sort((a, b) => (a.km ?? 0) - (b.km ?? 0));
-    const categoryLabels = {
-      ubytovani: "Ubytování",
-      obcerstveni: "Občerstvení",
-      navigace: "Navigace",
-      doprava: "Doprava",
-      turisticke_cile: "Turistické cíle",
-      ostatni: "Ostatní",
-    };
 
     const links = groupedItems
       .map((group, index) => {
@@ -167,10 +160,10 @@ const filters = [
         const displayName = representative.location_name || representative.point_name || "Bod trasy";
         const km = representative.km ?? "";
         const href = `/bod/${normalizeGuideSlug(slug)}`;
-        const categories = [...new Set(group.points.map((point: any) => point.category).filter(Boolean))] as string[];
-        const badges = categories
+        const types = [...new Set(group.points.map((point: any) => point.type).filter(Boolean))] as string[];
+        const badges = types
           .slice(0, 3)
-          .map((category: string) => `<span class="offline-guide-pill">${categoryLabels[category as keyof typeof categoryLabels] || category}</span>`)
+          .map((type: string) => `<span class="offline-guide-pill">${pointMetadata.types[type as keyof typeof pointMetadata.types]?.label || type}</span>`)
           .join("");
         const isLast = index === groupedItems.length - 1;
 
@@ -229,16 +222,24 @@ const filters = [
   }
 
   filterLinks.forEach((link) => {
-    link.addEventListener("click", async (event) => {
-      if (!(await shouldUseOfflineFallback())) return;
-
+    link.addEventListener("click", (event) => {
+      // preventDefault must run synchronously, before any await, or the browser
+      // will already have started navigating by the time we decide to intercept it.
       event.preventDefault();
-      const linkUrl = new URL(link.href, window.location.origin);
-      const filterKey = linkUrl.searchParams.get("filtr") || "vse";
 
-      window.history.pushState({}, "", linkUrl.toString());
-      setActiveFilterLink(filterKey);
-      await renderOfflineItinerary();
+      void (async () => {
+        if (!(await shouldUseOfflineFallback())) {
+          window.location.href = link.href;
+          return;
+        }
+
+        const linkUrl = new URL(link.href, window.location.origin);
+        const filterKey = linkUrl.searchParams.get("filtr") || "vse";
+
+        window.history.pushState({}, "", linkUrl.toString());
+        setActiveFilterLink(filterKey);
+        await renderOfflineItinerary();
+      })();
     });
   });
 
