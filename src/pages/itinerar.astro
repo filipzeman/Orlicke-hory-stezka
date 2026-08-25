@@ -159,41 +159,38 @@ const filters = [
     };
 
     const links = groupedItems
-      .map((group) => {
+      .map((group, index) => {
         const representative = group.points?.[0];
         if (!representative) return "";
 
         const slug = getPointSlug(representative);
         const displayName = representative.location_name || representative.point_name || "Bod trasy";
-        const km = representative.km ? `${representative.km} km` : "Bez km";
+        const km = representative.km ?? "";
         const href = `/bod/${normalizeGuideSlug(slug)}`;
         const categories = [...new Set(group.points.map((point: any) => point.category).filter(Boolean))] as string[];
         const badges = categories
           .slice(0, 3)
           .map((category: string) => `<span class="offline-guide-pill">${categoryLabels[category as keyof typeof categoryLabels] || category}</span>`)
           .join("");
+        const isLast = index === groupedItems.length - 1;
 
         return `
-          <div class="offline-guide-item">
-            <a href="${href}" class="offline-guide-link">
-              <div class="offline-guide-main">
-                <span class="offline-guide-name">${displayName}</span>
-                <div class="offline-guide-badges">${badges}</div>
-              </div>
-              <span class="offline-guide-meta">${km}</span>
-            </a>
+          <div
+            class="item ${isLast ? "last" : ""}"
+            data-lat="${representative.latitude ?? ""}"
+            data-lng="${representative.longitude ?? ""}"
+          >
+            <div class="km"><span>${km}</span></div>
+            <div class="content default">
+              <a href="${href}" class="name">${displayName}</a>
+              <div class="offline-guide-badges">${badges}</div>
+            </div>
           </div>
         `;
       })
       .join("");
 
-    offlineContainer.innerHTML = `
-      <div class="offline-guide-header">
-        <h2>Stáhnutý průvodce</h2>
-        <span>Bez internetu</span>
-      </div>
-      <div class="offline-guide-list">${links}</div>
-    `;
+    offlineContainer.innerHTML = links;
   }
 
   const shouldUseOfflineFallback = async () => {
@@ -254,70 +251,64 @@ const filters = [
   });
 
   const offlineStyles = `
-    .offline-guide-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-      margin: 0 0 1rem;
-      padding: 0.45rem 0;
-      border-bottom: 1px solid rgba(15, 23, 42, 0.1);
-    }
-
-    .offline-guide-header h2 {
-      margin: 0;
-      font-size: clamp(1.4rem, 2vw, 2rem);
-    }
-
-    .offline-guide-header span {
-      color: rgba(15, 23, 42, 0.62);
-      font-size: 0.82rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .offline-guide-list {
+    /* Mirrors PointCard's .item layout so the offline list matches the online one */
+    .points .item {
       display: grid;
-      gap: 0.75rem;
-    }
-
-    .offline-guide-item {
-      border: 1px solid rgba(15, 23, 42, 0.1);
-      border-radius: 12px;
-      background: rgba(255, 255, 255, 0.7);
-      overflow: hidden;
-      transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    .offline-guide-item:hover {
-      transform: translateY(-1px);
-      border-color: rgba(15, 23, 42, 0.18);
-      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
-    }
-
-    .offline-guide-link {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      grid-template-columns: 60px 1fr;
       gap: 1rem;
-      padding: 1rem 1.1rem;
-      text-decoration: none;
-      color: inherit;
-      font-weight: 600;
+      position: relative;
+      align-content: center;
     }
 
-    .offline-guide-main {
+    .points .item::before {
+      position: absolute;
+      content: "";
+      left: -2px;
+      top: 0.9rem;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: white;
+      border: 2px solid var(--color-text-muted);
+      z-index: 2;
+    }
+
+    .points .item::after {
+      content: "";
+      position: absolute;
+      left: 4px;
+      top: 1.1rem;
+      bottom: -1rem;
+      width: 2px;
+      background: #747474;
+      z-index: 1;
+    }
+
+    .points .item.last::after {
+      display: none;
+    }
+
+    .points .item .km {
+      font-weight: 600;
+      font-size: 1rem;
+      color: var(--color-text-muted);
+      text-align: right;
+      padding-left: 1rem;
+      padding-top: 0.4rem;
+    }
+
+    .points .item .content {
       display: flex;
       flex-direction: column;
-      gap: 0.45rem;
-      min-width: 0;
+      padding: 0.4rem 0;
+      align-items: flex-start;
+      gap: 0.4rem;
     }
 
-    .offline-guide-name {
-      color: var(--color-text, #0f172a);
-      font-size: 1rem;
-      line-height: 1.35;
+    .points .item .name {
+      font-weight: 600;
+      text-decoration: none;
+      color: inherit;
     }
 
     .offline-guide-badges {
@@ -337,12 +328,6 @@ const filters = [
       font-weight: 700;
       letter-spacing: 0.02em;
       text-transform: uppercase;
-    }
-
-    .offline-guide-meta {
-      font-size: 0.8rem;
-      color: rgba(15, 23, 42, 0.68);
-      white-space: nowrap;
     }
   `;
 
