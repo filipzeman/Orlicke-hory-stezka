@@ -191,7 +191,26 @@ export async function downloadOfflineGuide(
 
   await saveOfflineGuide(guide);
   await cacheOfflineGuideRoutes(guide);
+  await warmOfflineItineraryBundle();
   return guide;
+}
+
+// The offline itinerary list is lazy-loaded via dynamic import() so regular
+// online visitors never fetch React. That only works offline if the browser
+// already fetched (and the service worker cached) those chunks at least once -
+// which may never happen if the guide is downloaded from a page other than
+// /itinerar. Trigger the same imports here so downloading the guide always
+// warms the cache for them, regardless of which page the download happened on.
+async function warmOfflineItineraryBundle(): Promise<void> {
+  try {
+    await Promise.all([
+      import("react-dom/client"),
+      import("react"),
+      import("../components/OfflineItineraryList.tsx"),
+    ]);
+  } catch (error) {
+    console.warn("Unable to warm offline itinerary bundle", error);
+  }
 }
 
 export function normalizeGuideSlug(value?: string | null): string {
