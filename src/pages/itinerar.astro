@@ -167,10 +167,10 @@ const filters = [
         const displayName = representative.location_name || representative.point_name || "Bod trasy";
         const km = representative.km ? `${representative.km} km` : "Bez km";
         const href = `/bod/${normalizeGuideSlug(slug)}`;
-        const categories = [...new Set(group.points.map((point) => point.category).filter(Boolean))];
+        const categories = [...new Set(group.points.map((point: any) => point.category).filter(Boolean))] as string[];
         const badges = categories
           .slice(0, 3)
-          .map((category) => `<span class="offline-guide-pill">${categoryLabels[category] || category}</span>`)
+          .map((category: string) => `<span class="offline-guide-pill">${categoryLabels[category as keyof typeof categoryLabels] || category}</span>`)
           .join("");
 
         return `
@@ -324,7 +324,7 @@ const filters = [
     }
 
     let locationActive = false;
-    let currentElement = null;
+    let currentElement: HTMLElement | null = null;
 
     const handleSticky = () => {
       if (!filterBar) return;
@@ -340,11 +340,11 @@ const filters = [
     window.addEventListener("scroll", handleSticky, { passive: true });
     handleSticky();
 
-    function toRad(value) {
+    function toRad(value: number): number {
       return (value * Math.PI) / 180;
     }
 
-    function distance(a, b) {
+    function distance(a: { lat: number; lng: number }, b: { lat: number; lng: number }): number {
       const earthRadius = 6371;
       const dLat = toRad(b.lat - a.lat);
       const dLng = toRad(b.lng - a.lng);
@@ -356,14 +356,14 @@ const filters = [
       return earthRadius * c;
     }
 
-    function highlightNearest(user) {
-      const items = Array.from(document.querySelectorAll(".item"));
-      let closest = null;
+    function highlightNearest(user: { lat: number; lng: number }): HTMLElement | null {
+      const items = Array.from(document.querySelectorAll(".item")) as HTMLElement[];
+      let closest: HTMLElement | null = null;
       let minDist = Infinity;
 
       for (const el of items) {
-        const lat = Number(el.dataset.lat);
-        const lng = Number(el.dataset.lng);
+        const lat = Number((el as HTMLElement).dataset.lat);
+        const lng = Number((el as HTMLElement).dataset.lng);
 
         if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
           continue;
@@ -385,12 +385,12 @@ const filters = [
       return closest;
     }
 
-    function getStickyOffset() {
-      const stickyNav = document.querySelector(".sticky-nav");
+    function getStickyOffset(): number {
+      const stickyNav = document.querySelector(".sticky-nav") as HTMLElement | null;
       return stickyNav ? stickyNav.offsetHeight : 0;
     }
 
-    function scrollToElement(el) {
+    function scrollToElement(el: HTMLElement): void {
       const offset = getStickyOffset();
       const y = el.getBoundingClientRect().top + window.pageYOffset - offset - 150;
       window.scrollTo({ top: y, behavior: "smooth" });

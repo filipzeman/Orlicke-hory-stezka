@@ -172,13 +172,13 @@
   const removeButtonEl = document.getElementById("remove-guide-button");
   const statusEl = document.getElementById("offline-guide-status");
 
-  function setMessage(text, tone = "neutral") {
+  function setMessage(text: string, tone: string = "neutral") {
     if (!messageEl) return;
     messageEl.textContent = text;
     messageEl.dataset.tone = tone;
   }
 
-  function formatGuideDate(value) {
+  function formatGuideDate(value: string | null | undefined): string {
     if (!value) return "Zatím nebylo staženo";
 
     try {
@@ -194,13 +194,13 @@
     }
   }
 
-  function setBadge(text, tone = "neutral") {
+  function setBadge(text: string, tone: string = "neutral") {
     if (!badgeEl) return;
     badgeEl.textContent = text;
     badgeEl.dataset.tone = tone;
   }
 
-  function setUpdatedText(text) {
+  function setUpdatedText(text: string) {
     if (!updatedEl) return;
     updatedEl.textContent = text;
   }
@@ -214,11 +214,11 @@
       const isReady = status === "ready" && !!guide;
       const isOffline = typeof navigator !== "undefined" && !navigator.onLine;
 
-      buttonEl.disabled = false;
-      removeButtonEl.disabled = !isReady;
+      (buttonEl as HTMLButtonElement).disabled = false;
+      (removeButtonEl as HTMLButtonElement).disabled = !isReady;
 
       if (isReady) {
-        buttonEl.textContent = "Aktualizovat průvodce";
+        if (buttonEl) buttonEl.textContent = "Aktualizovat průvodce";
         statusEl.dataset.state = "ready";
         setBadge("Staženo", "success");
         setMessage(
@@ -229,13 +229,13 @@
         );
         setUpdatedText(`Poslední aktualizace: ${formatGuideDate(guide.generatedAt)}`);
       } else if (status === "error") {
-        buttonEl.textContent = "Stáhnout průvodce";
+        if (buttonEl) buttonEl.textContent = "Stáhnout průvodce";
         statusEl.dataset.state = "error";
         setBadge("Chyba", "error");
         setMessage("Offline průvodce není dostupný. Zkuste to znovu.", "error");
         setUpdatedText("Při načítání dat došlo k chybě.");
       } else {
-        buttonEl.textContent = "Stáhnout průvodce";
+        if (buttonEl) buttonEl.textContent = "Stáhnout průvodce";
         statusEl.dataset.state = "empty";
         setBadge("Není stažen", "neutral");
         setMessage(
@@ -252,8 +252,8 @@
       setBadge("Chyba", "error");
       setMessage("Offline průvodce není dostupný. Zkuste to znovu.", "error");
       setUpdatedText("Při načítání dat došlo k chybě.");
-      buttonEl.disabled = false;
-      removeButtonEl.disabled = true;
+      if (buttonEl) (buttonEl as HTMLButtonElement).disabled = false;
+      if (removeButtonEl) (removeButtonEl as HTMLButtonElement).disabled = true;
     }
   }
 
@@ -267,11 +267,11 @@
       setBadge("Offline", "neutral");
       setMessage("K stažení průvodce je potřeba připojení k internetu.", "error");
       setUpdatedText("Připojte se k síti a zkuste to znovu.");
-      buttonEl.disabled = false;
+      (buttonEl as HTMLButtonElement).disabled = false;
       return;
     }
 
-    buttonEl.disabled = true;
+    (buttonEl as HTMLButtonElement).disabled = true;
     statusEl.dataset.state = "empty";
     setBadge("Stahuje se", "neutral");
     setMessage("Stahování průvodce…", "neutral");
@@ -279,7 +279,7 @@
 
     try {
       const guide = await downloadOfflineGuide();
-      buttonEl.textContent = "Aktualizovat průvodce";
+      if (buttonEl) buttonEl.textContent = "Aktualizovat průvodce";
       statusEl.dataset.state = "ready";
       setBadge("Staženo", "success");
       setMessage("Průvodce je připravený k použití offline.", "success");
@@ -291,7 +291,7 @@
       setMessage("Stahování selhalo. Zkuste to prosím znovu.", "error");
       setUpdatedText("Stahování se nepodařilo");
     } finally {
-      buttonEl.disabled = false;
+      if (buttonEl) (buttonEl as HTMLButtonElement).disabled = false;
       await refreshGuideState();
     }
   }
@@ -299,14 +299,14 @@
   async function handleRemove() {
     if (!removeButtonEl || !statusEl) return;
 
-    removeButtonEl.disabled = true;
+    (removeButtonEl as HTMLButtonElement).disabled = true;
     setBadge("Mazání", "neutral");
     setMessage("Mazání průvodce…", "neutral");
     setUpdatedText("Odstraňování dat probíhá");
 
     try {
       await deleteOfflineGuide();
-      buttonEl.textContent = "Stáhnout průvodce";
+      if (buttonEl) buttonEl.textContent = "Stáhnout průvodce";
       statusEl.dataset.state = "empty";
       setBadge("Není stažen", "neutral");
       setMessage("Průvodce byl smazán. Přístup k datům je jen online.", "neutral");
@@ -318,7 +318,7 @@
       setMessage("Smazání selhalo. Zkuste to prosím znovu.", "error");
       setUpdatedText("Smazání se nepodařilo");
     } finally {
-      removeButtonEl.disabled = false;
+      if (removeButtonEl) (removeButtonEl as HTMLButtonElement).disabled = false;
       await refreshGuideState();
     }
   }

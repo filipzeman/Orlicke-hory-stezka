@@ -124,8 +124,8 @@ locationPoints = locationPoints.map((point) => {
 // Collect public image URLs
 const imageUrls = locationPoints.flatMap((point) =>
   (point.images ?? [])
-    .map((image) => toPublicImageUrl(image))
-    .filter((url): url is string => Boolean(url))
+    .map((image: string | null) => toPublicImageUrl(image))
+    .filter((url: string | null): url is string => Boolean(url))
 );
 
 console.log("Loaded point details:", detailsData?.length ?? 0);
@@ -244,14 +244,14 @@ const sections = [
       ];
 
       const sectionMarkup = sections
-        .filter((section) => grouped[section.key]?.length)
+        .filter((section) => grouped[section.key as keyof typeof grouped]?.length)
         .map((section) => {
-          const cards = grouped[section.key]
+          const cards = grouped[section.key as keyof typeof grouped]
             .map((service) => {
               const notes =
                 (service.note ?? "")
                   .split("-")
-                  .map((entry) => entry.replace(/^-\s?/, "").trim())
+                  .map((entry: string) => entry.replace(/^-\s?/, "").trim())
                   .filter(Boolean) ?? [];
 
               const contactItems = [
@@ -269,7 +269,7 @@ const sections = [
                 .join("");
 
               const notesMarkup = notes.length
-                ? `<ul class="notes">${notes.map((note) => `<li>${note}</li>`).join("")}</ul>`
+                ? `<ul class="notes">${notes.map((note: string) => `<li>${note}</li>`).join("")}</ul>`
                 : "";
 
               return `
